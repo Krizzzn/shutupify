@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shutupify", "Shutupify\Shutupify.csproj", "{0AF8C2C8-0AEB-4420-A54E-F7CA6C543459}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shutupify-win", "Application\Shutupify-win.csproj", "{DFC5C00A-C953-4977-85FD-BD739A976916}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0AF8C2C8-0AEB-4420-A54E-F7CA6C543459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AF8C2C8-0AEB-4420-A54E-F7CA6C543459}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AF8C2C8-0AEB-4420-A54E-F7CA6C543459}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AF8C2C8-0AEB-4420-A54E-F7CA6C543459}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFC5C00A-C953-4977-85FD-BD739A976916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFC5C00A-C953-4977-85FD-BD739A976916}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFC5C00A-C953-4977-85FD-BD739A976916}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFC5C00A-C953-4977-85FD-BD739A976916}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
