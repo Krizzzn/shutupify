@@ -14,7 +14,6 @@ The project is a quick hack to make my own life more easy.
 There are the following issues (and more):
 * In it's current state it will not compile without the lync SDK installed.  
 * There are no configuration possibilities (yet?).  
-* It doesn't even contain the reference dlls (yet?).
 * playback doesn't start automatically after a lync call ended (some threading problem)
 * works only for incoming calls
 
@@ -22,11 +21,12 @@ There are the following issues (and more):
 
 Following references are needed but not included:  
 * ManagedWinapi.dll
-* Microsoft.Lync.Model.dll (desktop version)
+* Microsoft.Lync.Model.dll (desktop version)  
+* Microsoft.Office.Uc.dll (desktop version) 
 
 --------
 
-Shutupify contains code from the toastify project (Spotify.cs) from [codeplex](http://toastify.codeplex.com). (Please don't hurt me).
+Shutupify contains code from the toastify project (Spotify.cs) from [codeplex](http://toastify.codeplex.com).
 
 
 
