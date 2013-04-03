@@ -12,7 +12,7 @@ namespace frm
 {
     public partial class ShutupifyView : Form
     {
-        Hooker sirHookalot;
+        AutoHooker sirHookalot;
         private Point _drag;
 
         public static string lastFoo;
@@ -27,7 +27,7 @@ namespace frm
             Whatsup.Text = "Igor!!! It's alive!";
 
 
-            sirHookalot = new Hooker();
+            sirHookalot = new AutoHooker();
 
             sirHookalot.ReactOnEvent += (t) => {
                 try {

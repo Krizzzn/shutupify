@@ -36,6 +36,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AutoHooker.cs" />
     <Compile Include="Hooker.cs" />
     <Compile Include="Probes\Hotkeys.cs" />
     <Compile Include="Jukeboxes\IJukebox.cs" />
