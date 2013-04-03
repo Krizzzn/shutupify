@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<project name="Shutupify" default="full" basedir=".">
+    <description>Builds the shutupify project.</description>
+    
+    <property name="debug" value="true" overwrite="false" />
+
+    <target name="clean" description="remove all generated files">
+        <delete>
+            <fileset>
+                <include name="bin/*"/>
+            </fileset>
+        </delete>
+    </target>
+
+    <target name="build-lib" description="compiles library source code">
+        <mkdir dir="bin" />
+        <copy todir="bin" failonerror="false" flatten="true">
+            <fileset>
+                <include name="lib\ManagedWinapi.dll"/>
+                <include name="lib\Microsoft.Lync.Model.dll"/>
+                <include name="lib\Microsoft.Office.Uc.dll"/>
+                <include name="C:\Program Files (x86)\Microsoft Office\Office15\LyncSDK\Assemblies\Desktop\Microsoft.Lync.Model.dll"/>
+                <include name="C:\Program Files (x86)\Microsoft Office\Office15\LyncSDK\Assemblies\Desktop\Microsoft.Office.Uc.dll"/>
+            </fileset>
+        </copy>
+        <echo unless="${file::exists('bin\ManagedWinapi.dll')}">Reference ManagedWinapi is missing - Hotkey probe will not be available.</echo>
+        <echo unless="${file::exists('bin\Microsoft.Lync.Model.dll')}">Reference Microsoft.Lync.Model.dll is missing - Lync probe will not be available.</echo>
+        <echo unless="${file::exists('bin\Microsoft.Office.Uc.dll')}">Reference Microsoft.Office.Uc.dll is missing - Lync probe will not be available.</echo>
+        <csc target="library" output="bin\shutupify-lib.dll" debug="${debug}">
+            <sources>
+                <include name="Shutupify\**.cs" />
+
+                <exclude name="Shutupify\Probes\Hotkeys.cs" unless="${file::exists('bin\ManagedWinapi.dll')}"/>
+                <exclude name="Shutupify\Probes\LyncCallProbe.cs" unless="${file::exists('bin\Microsoft.Lync.Model.dll') and file::exists('bin\Microsoft.Office.Uc.dll')}"/>
+            </sources>
+            <references>
+                <include name="System.dll" />
+                <include name="bin\ManagedWinapi.dll" if="${file::exists('bin\ManagedWinapi.dll')}"/>
+                <include name="bin\Microsoft.Office.Uc.dll" if="${file::exists('bin\Microsoft.Office.Uc.dll')}"/>
+                <include name="bin\Microsoft.Lync.Model.dll" if="${file::exists('bin\Microsoft.Lync.Model.dll')}"/>
+            </references>             
+        </csc>
+    </target>
+
+    <target name="build-app" depends="build-lib">
+        <csc target="winexe" output="bin\shutupify-app.exe" debug="${debug}"
+               main="frm.Program">
+            <sources>
+                <include name="Application\**.cs" />
+            </sources>
+            <references>
+                <include name="bin\shutupify-lib.dll" />
+                <include name="System.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="System.Windows.Forms.dll" />
+                <include name="System.Xml.dll" />
+            </references>
+        </csc>
+    </target>
+
+    <target name="full" depends="clean, build-lib, build-app"  description="clean and build the project">
+        <echo>fin</echo>
+    </target>
+
+</project>
