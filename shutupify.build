@@ -7,7 +7,7 @@
     <target name="clean" description="remove all generated files">
         <delete>
             <fileset>
-                <include name="bin/*"/>
+                <include name="bin/**"/>
             </fileset>
         </delete>
     </target>
@@ -59,7 +59,53 @@
         </csc>
     </target>
 
-    <target name="full" depends="clean, build-lib, build-app"  description="clean and build the project">
+    <target name="build-test" depends="build-lib">
+        <csc target="library" output="bin\tests\shutupify-integration-tests.dll" debug="${debug}">
+            <sources>
+                <include name="Tests\Integration\**.cs" />
+            </sources>
+            <references>
+                <include name="bin\shutupify-lib.dll" />
+                <include name="lib\nunit.framework.dll" />
+                <include name="lib\FluentAssertions.dll"/>
+                <include name="System.dll" />
+            </references>
+        </csc>
+        <csc target="library" output="bin\tests\shutupify-unit-tests.dll" debug="${debug}">
+            <sources>
+                <include name="Tests\Unit\**.cs" />
+            </sources>
+            <references>
+                <include name="bin\shutupify-lib.dll" />
+                <include name="lib\nunit.framework.dll" />
+                <include name="lib\FluentAssertions.dll"/>
+                <include name="System.dll" />
+            </references>
+        </csc>        
+        <copy todir="bin\tests" failonerror="false" flatten="true">
+            <fileset>
+                <include name="bin\*.dll"/>
+                <include name="lib\nunit.framework.dll"/>
+                <include name="lib\FluentAssertions.dll"/>
+            </fileset>
+        </copy>               
+    </target>
+
+    <target name="run-test" depends="build-test">
+        <echo>RUNNING UNIT TESTS</echo>
+        <nunit2>
+            <formatter type="Plain" />
+            <test assemblyname="bin\tests\shutupify-unit-tests.dll"/>
+        </nunit2>    
+        <echo>#########################</echo> 
+        <echo>RUNNING INTEGRATION TESTS</echo>
+        <nunit2>
+            <formatter type="Plain" />
+            <test assemblyname="bin\tests\shutupify-integration-tests.dll"/>
+        </nunit2> 
+    </target>
+
+    <target name="full" depends="clean, build-lib, run-test, build-app"  description="clean and build the project">
         <echo>fin</echo>
     </target>
 
