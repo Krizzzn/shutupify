@@ -45,6 +45,8 @@
     <Compile Include="Probes\LyncCallProbe.cs" />
     <Compile Include="Jukeboxes\Drivers\Spotify.cs" />
     <Compile Include="Jukeboxes\SpotifyController.cs" />
+    <Compile Include="Settings\FileSettingsReader.cs" />
+    <Compile Include="Settings\ISettingsReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ManagedWinapi">
