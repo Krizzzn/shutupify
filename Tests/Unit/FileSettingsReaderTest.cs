@@ -12,80 +12,75 @@ namespace Shutupify.Unit
     [TestFixture]
     public class FileSettingsReaderTest
     {
-        public FileSettingsReader GetSettingsReader() {
-            var settings = "BlaSettings = 123\n" +
-            "FooSettings       =     \t\t  123\t 21\t \n" +
-            "\r\t\tBeeSettings =\t\t\t12321321\n" +
-            "#commentedkey1 = value\n" +
-            "   #   commentedkey2 = value\n" +
-            " aComment = foo baz # bert\n" +
-            " keywithoutvalue = \n" +
-            " multiplus = = =";
-                
-            return new FileSettingsReader(settings);
+        public FileSettingsReader Subject;
+        public FileSettingsReader SubjectChoppedUp;
+        public string TestData;
+
+        [TestFixtureSetUp]
+        public void GetSettingsReader() {
+            TestData = System.IO.File.ReadAllText(@"data\FileSettingsReaderTestData");
+            Subject = new FileSettingsReader(TestData);
+
+            SubjectChoppedUp = new FileSettingsReader(System.IO.File.ReadAllText(@"data\FileSettingsReaderEdgyTestData"));
         }
 
         [Test]
-        public void reads_settings_from_string() {
-            new FileSettingsReader("").Settings.Should().NotBeNull();
+        public void serialize_without_change() {
+            var serialized = Subject.SerializeToString();
+            serialized.Should().BeEquivalentTo(TestData);
+        }
+        
+        [Test]
+        public void can_read_line() {
+            Subject["PlayerActivated"].Should().BeEquivalentTo("Yes");
         }
 
         [Test]
-        public void reads_simple_line() {
-            var settings = GetSettingsReader();
-            settings.Settings.Should().ContainKey("blasettings");
-            settings.Settings["blasettings"].Should().BeEquivalentTo("123");
-        }
-
-        [Test]
-        public void can_handle_tabs_and_whitespaces()
+        public void key_matching_is_case_insensitive()
         {
-            var settings = GetSettingsReader();
-            settings.Settings.Should().ContainKey("foosettings");
-            settings.Settings["foosettings"].Should().BeEquivalentTo("123\t 21");
+            Subject["PlaYerAcTivAted"].Should().BeEquivalentTo("Yes");
         }
 
         [Test]
-        public void ignores_line_comments()
+        public void cant_see_inline_comments()
         {
-            var settings = GetSettingsReader();
-            settings.Settings.Should().NotContainKey("commentedkey1");
-            settings.Settings.Should().NotContainKey("#commentedkey1");
-            settings.Settings.Should().NotContainKey("commentedkey2");
+            Subject["PlayerPause"].Should().BeNullOrEmpty();
         }
 
         [Test]
-        public void trims_comments_at_end_of_line()
+        public void handles_any_key()
         {
-            var settings = GetSettingsReader();
-            settings.Settings.Should().ContainKey("acomment");
-            settings.Settings["acomment"].Should().BeEquivalentTo("foo baz");
+            SubjectChoppedUp["any key that does not exist"].Should().BeNullOrEmpty();
         }
 
         [Test]
-        public void key_without_value()
+        public void doesnt_return_commented_line()
         {
-            var settings = GetSettingsReader();
-            settings.Settings.Should().ContainKey("keywithoutvalue");
-            settings.Settings["keywithoutvalue"].Should().BeNullOrEmpty();
+            Subject["ProbeSensitivity"].Should().Be("0.6");
         }
 
         [Test]
-        public void multiple_plusses()
+        public void handles_duplicate_keys()
         {
-            var settings = GetSettingsReader();
-            settings.Settings.Should().ContainKey("multiplus");
-            settings.Settings["multiplus"].Should().BeEquivalentTo("= =");
+            SubjectChoppedUp["PlayerActivated"].Should().BeEquivalentTo("Yes");
         }
 
         [Test]
-        public void serialize_to_string()
+        public void no_whitespace()
         {
-            var keyValue = "key=value\nvey=kalue";
-            var Settings = new FileSettingsReader(keyValue);
-            var result = Settings.SerializeToString();
+            SubjectChoppedUp["Loud"].Should().BeEquivalentTo("No");
+        }
 
-            keyValue.Should().BeEquivalentTo(result);
+        [Test]
+        public void whitespace_in_value()
+        {
+            SubjectChoppedUp["Brat"].Should().BeEquivalentTo("122 12	150		1231");
+        }
+
+        [Test]
+        public void whitespace_in_key()
+        {
+            SubjectChoppedUp["Fe ed"].Should().BeEquivalentTo("100");
         }
     }
 }

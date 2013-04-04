@@ -88,7 +88,12 @@
                 <include name="lib\nunit.framework.dll"/>
                 <include name="lib\FluentAssertions.dll"/>
             </fileset>
-        </copy>               
+        </copy>
+        <copy todir="bin\tests\data" failonerror="false" flatten="true">
+          <fileset>
+            <include name="Tests\Testdata\**"/>
+          </fileset>
+      </copy>
     </target>
 
     <target name="run-test" depends="build-test">

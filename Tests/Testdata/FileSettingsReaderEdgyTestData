@@ -1,0 +1,15 @@
+﻿# This is the file to be tested against
+
+		PlayerActivated     = Yes
+		PlayerActivated     = No
+	PlayerActivated= Maybe
+Loud=No
+Fe ed					= 100
+Brat = 122 12	150		1231
+
+Key
+Kitten = # moooooood
+# PlayerPause		= Never
+
+ProbeSensitivity    = 0.6	# .6 is awesome
+# some other comment for every one

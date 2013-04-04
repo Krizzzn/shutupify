@@ -2,42 +2,51 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Shutupify.Settings
 {
     public class FileSettingsReader : ISettingsReader
     {
-        private string settings;
+        private List<string> _settings;
 
         public FileSettingsReader(string settings)
         {
-            Settings = new Dictionary<string, string>();
+            _settings = new List<string>();
 
-            foreach (var line in settings.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries)) {
-                ReadSingleLine(line);
-            }
-
-            this.settings = settings;
+            foreach (var line in settings.Split(new[] { '\n' }))
+                _settings.Add(line.Trim());
         }
 
-        private void ReadSingleLine(string line)
+        private string ReadSingleLine(string line)
         {
             if (line.Contains("#"))
                 line = line.Substring(0, line.IndexOf("#"));
             var lineSplit = line.Trim().Split(new[] { '=' }, 2);
             if (lineSplit.Length != 2 || line.StartsWith("#"))
-                return;
-            this.Settings.Add(lineSplit[0].Trim().ToLower(), lineSplit[1].Trim());
+                return"";
+            return lineSplit[1].Trim();
         }
 
         public string SerializeToString() {
-            return "";
+            return string.Join("\r\n", _settings.ToArray());
         }
 
-        public Dictionary<string, string> Settings
+        public string this [string key]
         {
-            get;
-            private set;
+            get
+            {
+                foreach (string line in _settings) {
+                    if (Regex.IsMatch(line, @"^\W*"+key+@"\W*\=", RegexOptions.IgnoreCase))
+                        return ReadSingleLine(line);
+                }
+                return "";
+
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

@@ -7,6 +7,6 @@ namespace Shutupify.Settings
 {
     public interface ISettingsReader
     {
-        Dictionary<string, string> Settings { get; }
+        string this[string key]{get;set;}
     }
 }

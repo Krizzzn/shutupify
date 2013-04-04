@@ -1,0 +1,7 @@
+﻿# This is the file to be tested against
+
+PlayerActivated     = Yes
+# PlayerPause		= Never
+
+ProbeSensitivity    = 0.6	# .6 is awesome
+# some other comment for every one
