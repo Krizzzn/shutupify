@@ -11,23 +11,28 @@ namespace Shutupify
         List<IEventProbe> _probes;
         List<IJukebox> _jukeboxes;
 
-
         public AutoHooker()
         {
-
+            _probes = new List<IEventProbe>();
+            _jukeboxes = new List<IJukebox>();
+            LoadFromAssembly(Assembly.GetExecutingAssembly());
         }
 
         public void Hookup() {
-            _probes = FindClassesAndCreateInstances<IEventProbe>(Assembly.GetExecutingAssembly());
-            _jukeboxes = FindClassesAndCreateInstances<IJukebox>(Assembly.GetExecutingAssembly());
-
             _probes.ForEach(probe => {
                 _jukeboxes.ForEach(jukebox => probe.ReactOnEvent += jukebox.PerformAction);
                 probe.ReactOnEvent += BubbleReactOnEvent;
                 probe.StartObserving();
             });
         }
-        
+
+        public IEventProbe[] Probes { get { return _probes.ToArray(); } }
+        public IJukebox[] Jukeboxes { get { return _jukeboxes.ToArray(); } }
+
+        public void LoadFromAssembly(Assembly asm) {
+            _probes.AddRange(FindClassesAndCreateInstances<IEventProbe>(asm));
+            _jukeboxes.AddRange(FindClassesAndCreateInstances<IJukebox>(asm));
+        }
 
         private void BubbleReactOnEvent(JukeboxCommand obj)
         {
@@ -50,6 +55,25 @@ namespace Shutupify
             .ToList();
 
             return probes;
+        }
+
+        public void Clear()
+        {
+            _probes.ForEach(probe => { if (probe is IDisposable) ((IDisposable)probe).Dispose(); });
+            _jukeboxes.ForEach(jukebox => { if (jukebox is IDisposable) ((IDisposable)jukebox).Dispose(); });
+
+            _jukeboxes.Clear();
+            _probes.Clear();
+        }
+
+        public void Add(IJukebox jukebox)
+        {
+            _jukeboxes.Add(jukebox);
+        }
+
+        public void Add(IEventProbe eventProbe)
+        {
+            _probes.Add(eventProbe);
         }
     }
 }

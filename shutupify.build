@@ -79,21 +79,37 @@
                 <include name="bin\shutupify-lib.dll" />
                 <include name="lib\nunit.framework.dll" />
                 <include name="lib\FluentAssertions.dll"/>
+                <include name="lib\Moq.dll"/>
                 <include name="System.dll" />
             </references>
-        </csc>        
+        </csc>
+        <csc target="library" output="bin\tests\testdata\shutupify-mock.dll" debug="${debug}">
+            <sources>
+                <include name="Tests\TestData\**.cs" />
+            </sources>
+            <references>
+                <include name="bin\shutupify-lib.dll" />
+                <include name="System.dll" />
+            </references>
+        </csc>     
         <copy todir="bin\tests" failonerror="false" flatten="true">
             <fileset>
                 <include name="bin\*.dll"/>
                 <include name="lib\nunit.framework.dll"/>
                 <include name="lib\FluentAssertions.dll"/>
+                <include name="lib\Moq.dll"/>
             </fileset>
         </copy>
         <copy todir="bin\tests\data" failonerror="false" flatten="true">
           <fileset>
             <include name="Tests\Testdata\**"/>
           </fileset>
-      </copy>
+        </copy>
+        <delete>
+            <fileset>
+                <include name="bin\Tests\data\**.cs"/>
+            </fileset>
+        </delete>
     </target>
 
     <target name="run-test" depends="build-test">
