@@ -9,6 +9,7 @@ using Shutupify;
 using System.Reflection;
 using FluentAssertions;
 using Shutupify.Probes;
+using Shutupify.Settings;
 
 namespace Shutupify.Unit
 {
@@ -86,6 +87,105 @@ namespace Shutupify.Unit
             probe.Raise(m => m.ReactOnEvent += null, JukeboxCommand.Toggle);
             jukebox.Verify(j => j.PerformAction(JukeboxCommand.Toggle));
             eventFired.Should().BeTrue();
+        }
+
+        [Test]
+        public void reads_settings()
+        {
+            var settings = new Mock<ISettingsReader>();
+
+            var probe = new Mock<IEventProbe>();
+            var probeSettable = probe.As<ISettable>();
+            
+            var jukebox = new Mock<IJukebox>();
+            var jukeboxSettable = jukebox.As<ISettable>();
+
+            AutoHooker auto = new AutoHooker(settings.Object);
+            auto.Clear();
+
+            auto.Add(probe.Object);
+            auto.Add(jukebox.Object);
+
+            auto.Hookup();
+            probeSettable.Verify(m => m.ReadSettings(settings.Object), Times.Once());
+            jukeboxSettable.Verify(m => m.ReadSettings(settings.Object), Times.Once());
+        }
+
+        [Test]
+        public void ensures_type_activated_key()
+        {
+            var settings = new Mock<ISettingsReader>();
+
+            var probe = new Mock<IEventProbe>();
+            var probeSettable = probe.As<ISettable>();
+            var probeName = probe.As<IName>();
+            probeName.Setup(m => m.Name).Returns("probe");
+
+            var jukebox = new Mock<IJukebox>();
+            var jukeboxSettable = jukebox.As<ISettable>();
+
+            AutoHooker auto = new AutoHooker(settings.Object);
+            auto.Clear();
+
+            auto.Add(probe.Object);
+            auto.Add(jukebox.Object);
+
+            auto.Hookup();
+            settings.Verify(m => m.EnsureKey("probe:activated", "no"), Times.Once());
+        }
+
+        [Test]
+        [TestCase("no", false)]
+        [TestCase("asdjasdlkj", false)]
+        [TestCase("yes", true)]
+        [TestCase("true", true)]
+        [TestCase("active", true)]
+        public void obeys_probe_type_activated_key(string returns, bool shouldBeActivated)
+        {
+            var settings = new Mock<ISettingsReader>();
+            settings.SetupGet(m => m["Proby:activated"]).Returns(returns);
+
+            var probe = new Mock<IEventProbe>();
+            probe.SetupGet(m => m.Name).Returns("Proby");
+
+            var jukebox = new Mock<IJukebox>();
+
+            AutoHooker auto = new AutoHooker(settings.Object);
+            auto.Clear();
+
+            auto.Add(probe.Object);
+            auto.Add(jukebox.Object);
+
+            auto.Hookup();
+            
+            probe.Verify(m=>m.StartObserving(), Times.Exactly(shouldBeActivated ? 1 : 0));
+        }
+
+        [Test]
+        [TestCase("no", false)]
+        [TestCase("asdjasdlkj", false)]
+        [TestCase("yes", true)]
+        [TestCase("true", true)]
+        [TestCase("active", true)]
+        public void obeys_jukebox_type_activated_key(string returns, bool shouldBeActivated)
+        {
+            var settings = new Mock<ISettingsReader>();
+            settings.SetupGet(m => m["Jukey:activated"]).Returns(returns);
+
+            var probe = new Mock<IEventProbe>();
+            var jukebox = new Mock<IJukebox>();
+            var jukeboxIName = jukebox.As<IName>();
+            jukeboxIName.SetupGet(m => m.Name).Returns("Jukey");
+
+            AutoHooker auto = new AutoHooker(settings.Object);
+            auto.Clear();
+
+            auto.Add(probe.Object);
+            auto.Add(jukebox.Object);
+
+            auto.Hookup();
+
+            jukebox.VerifySet(m => m.Active = shouldBeActivated, Times.Once());
         }
     }
 }

@@ -51,5 +51,17 @@ namespace Shutupify.Jukeboxes
             Spotify.SendAction(SpotifyAction.PlayPause);
             _wasPaused = false;
         }
+
+        public bool Active
+        {
+            get;
+            set;
+        }
+
+
+        public string Name
+        {
+            get { return "Spotify"; }
+        }
     }
 }

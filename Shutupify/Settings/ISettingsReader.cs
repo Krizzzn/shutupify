@@ -9,5 +9,6 @@ namespace Shutupify.Settings
     {
         string this[string key]{get;}
         IEnumerable<string> Keys { get; }
+        void EnsureKey(string key, string defaultValue);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
+using Shutupify.Settings;
 
 namespace Shutupify
 {
@@ -11,23 +12,58 @@ namespace Shutupify
         List<IEventProbe> _probes;
         List<IJukebox> _jukeboxes;
 
-        public AutoHooker()
+        public AutoHooker() : this(null)
+        {}
+
+        public AutoHooker(Settings.ISettingsReader settings)
         {
             _probes = new List<IEventProbe>();
             _jukeboxes = new List<IJukebox>();
             LoadFromAssembly(Assembly.GetExecutingAssembly());
-        }
-
-        public void Hookup() {
-            _probes.ForEach(probe => {
-                _jukeboxes.ForEach(jukebox => probe.ReactOnEvent += jukebox.PerformAction);
-                probe.ReactOnEvent += BubbleReactOnEvent;
-                probe.StartObserving();
-            });
+            this._settings = settings;
         }
 
         public IEventProbe[] Probes { get { return _probes.ToArray(); } }
         public IJukebox[] Jukeboxes { get { return _jukeboxes.ToArray(); } }
+        public event Action<JukeboxCommand> ReactOnEvent;
+        private ISettingsReader _settings;
+
+        public void Hookup() {
+            Setup(_probes);
+            Setup(_jukeboxes);
+
+            _probes.ForEach(probe => {
+                _jukeboxes.ForEach(jukebox => probe.ReactOnEvent += jukebox.PerformAction);
+                probe.ReactOnEvent += BubbleReactOnEvent;
+
+                if (IsActive(probe))
+                    probe.StartObserving();
+            });
+
+            _jukeboxes.ForEach(jukebox => jukebox.Active = IsActive(jukebox));
+        }
+
+        private bool IsActive<T>(T item) where T : IName
+        {
+            if (_settings == null)
+                return true;
+
+            var validValues = new[]{"yes", "true", "1", "active", "on"};
+            return (validValues.Contains((_settings[item.Name + ":activated"]??"").ToLower()));
+        }
+
+        private void Setup<T>(List<T> list) where T : IName
+        {
+            if (_settings == null)
+                return;
+
+            list.ForEach((item) => {
+                _settings.EnsureKey(item.Name + ":activated", "no");
+
+                if (item is ISettable)
+                    ((ISettable)item).ReadSettings(_settings);
+            });
+        }
 
         public void LoadFromAssembly(Assembly asm) {
             _probes.AddRange(FindClassesAndCreateInstances<IEventProbe>(asm));
@@ -39,8 +75,6 @@ namespace Shutupify
             if (this.ReactOnEvent != null)
                 this.ReactOnEvent(obj);
         }
-
-        public event Action<JukeboxCommand> ReactOnEvent;
 
         private List<T> FindClassesAndCreateInstances<T>(Assembly asm) {
             var types = asm.GetTypes().Where(m => m.GetInterfaces().Contains(typeof(T))).ToArray();

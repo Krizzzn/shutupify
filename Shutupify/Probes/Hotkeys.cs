@@ -74,5 +74,11 @@ namespace Shutupify.Probes
 
             this._hotkeys.Add(hotkey);
         }
+
+
+        public string Name
+        {
+            get { return "Hotkeys"; }
+        }
     }
 }

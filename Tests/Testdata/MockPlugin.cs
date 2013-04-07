@@ -19,6 +19,12 @@ namespace Shutupify.Testdata.MockPlugin
         {
             return true;
         }
+
+
+        public string Name
+        {
+            get { return "ProbeMock"; }
+        }
     }
 
     public class PlayerMock : Shutupify.IJukebox
@@ -26,6 +32,18 @@ namespace Shutupify.Testdata.MockPlugin
         public void PerformAction(JukeboxCommand cmd)
         {
             
+        }
+
+        public bool Active
+        {
+            get;
+            set;
+        }
+
+
+        public string Name
+        {
+            get { return "PlayerMock"; }
         }
     }
 

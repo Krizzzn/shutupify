@@ -49,5 +49,11 @@ namespace Shutupify.Probes
             return true;
         }
 
+
+
+        public string Name
+        {
+            get { return "AFK"; }
+        }
     }
 }
