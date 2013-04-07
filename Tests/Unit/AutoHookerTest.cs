@@ -20,7 +20,7 @@ namespace Shutupify.Unit
         public void load_probes_from_given_dll() {
             AutoHooker auto = new AutoHooker();
 
-            var assem = Assembly.LoadFrom(@"testdata\shutupify-mock.dll");
+            var assem = Assembly.LoadFrom(@"data\shutupify-mock.dll");
             auto.LoadFromAssembly(assem);
 
             auto.Probes.Length.Should().BeGreaterOrEqualTo(1);
