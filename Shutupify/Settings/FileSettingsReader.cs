@@ -9,6 +9,7 @@ namespace Shutupify.Settings
     public class FileSettingsReader : ISettingsReader
     {
         private List<string> _settings;
+        private List<string> _keys;
 
         public FileSettingsReader(string settings)
         {
@@ -40,13 +41,43 @@ namespace Shutupify.Settings
                     if (Regex.IsMatch(line, @"^\W*"+key+@"\W*\=", RegexOptions.IgnoreCase))
                         return ReadSingleLine(line);
                 }
+                EnsureKey(key, null);
                 return "";
+            }
+        }
 
-            }
-            set
+
+        public void EnsureKey(string key, string defaultValue)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+                return;
+            if (key.Contains('\n') || key.Contains('\r'))
+                return;
+            if (this.Keys.Contains(key))
+                return;
+
+            this._settings.Add("#" + key + " = " + defaultValue);
+            ReadKeys();
+        }
+
+        public IEnumerable<string> Keys
+        {
+            get
             {
-                throw new NotImplementedException();
+                if (_keys == null)
+                    ReadKeys();
+                return _keys.ToArray();
             }
+        }
+
+        private void ReadKeys()
+        {
+            _keys = this._settings
+                .Select(line => (Regex.Match(line, @"^(\W|\#)*.*?(?=\W*\=)").Value ?? "").Trim())
+                .Select(key => key.Replace("#","").Trim())
+                .Where(key => !string.IsNullOrEmpty(key))
+                .Distinct()
+                .ToList();
         }
     }
 }

@@ -82,5 +82,81 @@ namespace Shutupify.Unit
         {
             SubjectChoppedUp["Fe ed"].Should().BeEquivalentTo("100");
         }
+
+        [Test]
+        public void list_all_keys() {
+            var keys = new FileSettingsReader("key1 = 123\r\nkey2 = 124\r\n# key3 = 12838");
+
+            keys.Keys.Should().ContainInOrder(new[] {"key1","key2", "key3" });
+        }
+
+        [Test]
+        public void list_all_keys_without_duplicates()
+        {
+            var keys = new FileSettingsReader("key1 = 123\r\nkey1 = 124\r\n# key3 = 12838");
+
+            keys.Keys.Should().HaveCount(2);
+            keys.Keys.Should().ContainInOrder(new[] { "key1", "key3" });
+        }
+
+        [Test]
+        public void commented_keys_wont_return_a_value()
+        {
+            var keys = new FileSettingsReader("key1 = 123\r\nkey2 = 124\r\n# key3 = 12838");
+
+            keys["key3"].Should().BeNullOrEmpty();
+            keys["key2"].Should().BeEquivalentTo("124");
+        }
+
+        [Test]
+        public void ensure_key_adds_commented_out_key()
+        {
+            var keys = new FileSettingsReader("key1 = 123");
+            keys.Keys.Should().Contain("key1");
+
+            keys.EnsureKey("key2", "455");
+            var serialized = keys.SerializeToString();
+
+            keys.Keys.Should().Contain("key2");
+            keys["key2"].Should().BeNullOrEmpty();
+
+            serialized.Should().EndWithEquivalent("#key2 = 455");
+        }
+
+        [Test]
+        public void ignore_empty_or_invalid_keys() {
+            var keys = new FileSettingsReader("key1 = 123");
+
+            keys.EnsureKey(null, "");
+            keys.EnsureKey("", "");
+            keys.EnsureKey("    ", "");
+            keys.EnsureKey("foo\nbar", "");
+            keys.EnsureKey("foo\rbar", "");
+            
+            keys.SerializeToString().Should().BeEquivalentTo("key1 = 123");
+        }
+
+        [Test]
+        public void ensure_adds_key_only_once() {
+            var keys = new FileSettingsReader("key1 = 123");
+            keys.EnsureKey("foo", "1");
+            keys.EnsureKey("foo", "2");
+            keys.EnsureKey("foo", "3");
+
+            keys.Keys.Should().HaveCount(2);
+            keys.SerializeToString().Should().BeEquivalentTo("key1 = 123\r\n#foo = 1");
+        }
+
+        [Test]
+        public void read_key_ensures_key()
+        {
+            var keys = new FileSettingsReader("key1 = 123");
+
+            var newkey = keys["key2"];
+
+            newkey.Should().BeNullOrEmpty();
+            keys.SerializeToString().Should().BeEquivalentTo("key1 = 123\r\n#key2 = ");
+        }
+
     }
 }

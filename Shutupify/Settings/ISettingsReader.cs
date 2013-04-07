@@ -7,6 +7,7 @@ namespace Shutupify.Settings
 {
     public interface ISettingsReader
     {
-        string this[string key]{get;set;}
+        string this[string key]{get;}
+        IEnumerable<string> Keys { get; }
     }
 }
