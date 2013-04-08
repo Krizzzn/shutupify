@@ -3,6 +3,7 @@
 
 #Project Specifics
 Lib/*.dll
+ChromeExtension/*.js
 
 # User-specific files
 *.suo

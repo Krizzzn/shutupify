@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "shutupify, for Chrome!",
+  "description": "Control playback of HTML audio elements with shutupify.",
+  "version": "0.1",
+  "background": { "scripts": ["shutupify.js"] },
+  "permissions": [
+    "tabs","<all_urls>"
+  ],
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["shutupify-content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
