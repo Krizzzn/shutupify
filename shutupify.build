@@ -31,7 +31,7 @@
             <sources>
                 <include name="Shutupify\**.cs" />
 
-                <exclude name="Shutupify\Probes\Hotkeys.cs" unless="${file::exists('bin\ManagedWinapi.dll')}"/>
+                <exclude name="Shutupify\Probes\HotkeysProbe.cs" unless="${file::exists('bin\ManagedWinapi.dll')}"/>
                 <exclude name="Shutupify\Jukeboxes\iTunesController.cs" unless="${file::exists('bin\Interop.iTunesLib.dll')}"/>
                 <exclude name="Shutupify\Probes\LyncCallProbe.cs" unless="${file::exists('bin\Microsoft.Lync.Model.dll') and file::exists('bin\Microsoft.Office.Uc.dll')}"/>
             </sources>
