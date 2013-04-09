@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Lync.Model;
 using Microsoft.Lync.Model.Conversation;
+using Shutupify.Settings;
 
 namespace Shutupify.Probes
 {
@@ -78,6 +79,11 @@ namespace Shutupify.Probes
         {
             return conversation.Modalities.ContainsKey(modalityType) &&
                    conversation.Modalities[modalityType].State == ModalityState.Notified;
+        }
+
+        public string Name
+        {
+            get { return "LyncCall"; }
         }
     }
 }
