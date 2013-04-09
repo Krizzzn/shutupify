@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AutoHooker.cs" />
-    <Compile Include="Probes\Hotkeys.cs" />
+    <Compile Include="Probes\HotkeysProbe.cs" />
     <Compile Include="Jukeboxes\IJukebox.cs" />
     <Compile Include="Jukeboxes\JukeboxCommand.cs" />
     <Compile Include="Probes\IEventProbe.cs" />
