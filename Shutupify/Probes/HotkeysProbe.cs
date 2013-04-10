@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ManagedWinapi;
+using Shutupify.Settings;
 
 namespace Shutupify.Probes
 {
-    public class HotkeysProbe : IEventProbe
+    public class HotkeysProbe : IEventProbe, IDisposable, ISettable
     {
         List<ManagedWinapi.Hotkey> _hotkeys;
+        private bool _isDisposed;
 
         public HotkeysProbe()
         {
@@ -17,15 +19,7 @@ namespace Shutupify.Probes
 
         ~HotkeysProbe()
         {
-            while (_hotkeys.Count > 0)
-            {
-                if (_hotkeys[0] != null) {
-                    _hotkeys[0].Enabled = false;
-                    _hotkeys[0].Dispose();
-                }
-                _hotkeys.RemoveAt(0);
-            }
-
+            this.Dispose();
         }
 
         public event Action<JukeboxCommand> ReactOnEvent;
@@ -79,6 +73,34 @@ namespace Shutupify.Probes
         public string Name
         {
             get { return "Hotkeys"; }
+        }
+
+        public void Dispose()
+        {
+            if (this._isDisposed) return;
+
+            while (_hotkeys.Count > 0)
+            {
+                if (_hotkeys[0] != null)
+                {
+                    _hotkeys[0].Enabled = false;
+                    _hotkeys[0].Dispose();
+                }
+                _hotkeys.RemoveAt(0);
+            }
+            _isDisposed = true;
+        }
+
+        public void ReadSettings(ISettingsReader settings)
+        {
+            settings.EnsureKey(this.Name + ":" + JukeboxCommand.Play.ToString(), "CTRL+ALT+SHIFT+Up");
+            settings.EnsureKey(this.Name + ":" + JukeboxCommand.Pause.ToString(), "CTRL+ALT+SHIFT+Down");
+            settings.EnsureKey(this.Name + ":" + JukeboxCommand.PreviousTrack.ToString(), "CTRL+ALT+SHIFT+Left");
+            settings.EnsureKey(this.Name + ":" + JukeboxCommand.NextTrack.ToString(), "CTRL+ALT+SHIFT+Right");
+
+            /*foreach (string command in Enum.GetNames(typeof(JukeboxCommand))) { 
+                var hotkey = ParseItem()
+            }*/
         }
     }
 }
