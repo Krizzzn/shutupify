@@ -1,23 +1,54 @@
 
 shutupify =
-  playing_tab: null,
-  player_id: null
+  player: null
+  socket: null,
+  open_socket: ->
+    unless (shutupify.socket?)
+      this.connect()
+  connect: ->
+  	this.socket = new WebSocket("ws://localhost:9971/shutupify") 
+
+  	this.socket.onopen = ->
+  	  console.log "shutupify connected"
+
+  	this.socket.onclose = ->
+  	  console.log "shutupify connection lost."
+  	  shutupify.socket = null
+  	  null
+
+    this.socket.onmessage = (evt) ->
+      console.log "shutupify received: #{evt.data}"
+
+      if /^shutupify:.{4,20}/.test evt.data 
+        console.log "message is valid"
+        message = evt.data.substring(10)
+        shutupify.player.control message
+
+      this.socket
 
 chrome.browserAction.onClicked.addListener (tab) ->
-  return unless shutupify.playing_tab
-  chrome.tabs.sendMessage shutupify.playing_tab.id, "PLAY:#{shutupify.player_id}"
+  shutupify.open_socket()
 
 chrome.runtime.onMessage.addListener (request, sender) ->
-  shutupify.playing_tab = sender.tab
-  shutupify.player_id = request.player_id
+  if !shutupify.player? and shutupify?.player_id != request.player_id
+    shutupify.player = new Player sender.tab, request.player_id
+  shutupify.player.playing = (request.playback == "started")
+  shutupify.open_socket()
   console.log "registered to tab", request, shutupify
 
-#chrome.runtime.onConnect.addListener (port) ->
-#  console.assert port.name is "knockknock"
-#  port.onMessage.addListener (msg) ->
-#    if msg.joke is "Knock knock"
-#      port.postMessage question: "Who's there?"
-#    else if msg.answer is "Madame"
-#      port.postMessage question: "Madame who?"
-#    else port.postMessage question: "I don't get it."  if msg.answer is "Madame... Bovary"
+
+class Player
+  constructor: (@tab, @player_id) ->
+    player_id = @player_id
+    console.log "new player!"
+
+  playing: false
+
+  player_id: null
+
+  control: (msg) ->
+  	chrome.tabs.sendMessage @tab.id, "#{msg}:#{@player_id}"
+
+
+
 

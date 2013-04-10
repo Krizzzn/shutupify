@@ -1,27 +1,28 @@
 
 shutupify = 
-
-
   initialize: -> 
-  	audio_elements = document.getElementsByTagName "audio"
-  	return if audio_elements.length == 0
-  	shutupify.register_event audio_element for audio_element in audio_elements
-  	shutupify.initialize_events()
+    console.log "initialize"
+    audio_elements = document.getElementsByTagName "audio"
+    return if audio_elements.length = 0
+    console.log "found targets"
+    shutupify.register_event audio_element for audio_element in audio_elements
+    shutupify.initialize_events()
 
   register_event: (audio) ->
-  	audio.addEventListener "play", ->
-  	  chrome.runtime.sendMessage {"playback": "started", "player_id": this.id}
-  	audio.addEventListener "pause", ->
-  	  chrome.runtime.sendMessage {"playback": "paused", "player_id": this.id}
+    audio.addEventListener "play", ->
+      chrome.runtime.sendMessage {"playback": "started", "player_id": this.id}
+    audio.addEventListener "pause", ->
+      chrome.runtime.sendMessage {"playback": "paused", "player_id": this.id}
 
   initialize_events: ->
-  	chrome.runtime.onMessage.addListener (message, sender) ->
-  	  splitted = message.split ":"
-  	  return unless splitted[0] is "PLAY"
-  	  player = document.getElementById splitted[1]
-  	  console.log player, splitted[1], message
-  	  player.play()
-
+    chrome.runtime.onMessage.addListener (message, sender) ->
+      splitted = message.split ":"
+      current_player = document.getElementById splitted[1]
+      switch splitted[0]
+        when "PLAY!" then current_player.play()
+        when "PAUSE!" then current_player.pause()
+        when "PLAYING?" then console.log current_player.paused
+      console.log player, splitted[1], message
 
 document.addEventListener "DOMContentLoaded", ->
   shutupify.initialize()
