@@ -3,7 +3,6 @@
 
 #Project Specifics
 Lib/*.dll
-ChromeExtension/*.js
 
 # User-specific files
 *.suo
@@ -150,3 +149,4 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+._.DS_Store
