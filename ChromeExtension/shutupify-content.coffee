@@ -22,7 +22,7 @@ shutupify =
         when "PLAY!" then current_player.play()
         when "PAUSE!" then current_player.pause()
         when "PLAYING?" then console.log current_player.paused
-      console.log player, splitted[1], message
+      console.log current_player, splitted[1], message
 
 document.addEventListener "DOMContentLoaded", ->
   shutupify.initialize()
