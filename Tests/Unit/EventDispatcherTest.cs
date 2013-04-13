@@ -154,5 +154,22 @@ namespace Shutupify.Unit
             dsp1.Dispatch(JukeboxCommand.NextTrack);
             itunes.Verify(m => m.PerformAction(It.IsAny<JukeboxCommand>()), Times.Never());
        }
+
+        [Test]
+        public void uses_last_jukebox_only_if_still_available()
+        {
+            itunes.SetupGet(m => m.IsPlaying).Returns(true);
+            EventDispatcher dsp1 = new EventDispatcher(new[] { itunes.Object, spotify.Object });
+
+            dsp1.Dispatch(JukeboxCommand.Pause);
+
+            itunes.SetupGet(m => m.IsPlaying).Returns(false);
+            itunes.SetupGet(m => m.IsAvailable).Returns(false);
+
+            dsp1.Dispatch(JukeboxCommand.Play);
+
+            itunes.Verify(m => m.PerformAction(JukeboxCommand.Pause), Times.Once());
+            spotify.Verify(m => m.PerformAction(JukeboxCommand.Play), Times.Once());
+        }
     }
 }

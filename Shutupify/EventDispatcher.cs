@@ -45,10 +45,10 @@ namespace Shutupify
         private IJukebox GetCurrentPlayer()
         {
             var player = Jukeboxes.Where(p => p.IsActive && p.IsAvailable && p.IsPlaying).FirstOrDefault();
-            if (player == null)
+            if (player == null && _lastJukebox != null && _lastJukebox.IsAvailable)
                 player = _lastJukebox;
             if (player == null && Jukeboxes.Where(p => p.IsActive && p.IsAvailable).Count() == 1)
-                player = Jukeboxes.Where(p => p.IsAvailable && p.IsAvailable).Single();
+                player = Jukeboxes.Where(p => p.IsActive && p.IsAvailable).Single();
 
             if (player != _lastJukebox)
                 _wasPaused = false;
