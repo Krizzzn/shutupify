@@ -9,7 +9,6 @@ namespace Shutupify.Jukeboxes
     public class SpotifyController : Shutupify.IJukebox
     {
         private Dictionary<JukeboxCommand, Action> _actionMapping;
-        private bool _wasPaused;
 
         public SpotifyController()
         {
@@ -25,9 +24,9 @@ namespace Shutupify.Jukeboxes
             _actionMapping[JukeboxCommand.NextTrack] = () => Spotify.SendAction(SpotifyAction.NextTrack);
             _actionMapping[JukeboxCommand.PreviousTrack] = () => Spotify.SendAction(SpotifyAction.PreviousTrack);
             _actionMapping[JukeboxCommand.Play] = PlayIfPaused;
-            _actionMapping[JukeboxCommand.PlayAfterPaused] = () => { if (_wasPaused) PlayIfPaused(); };
+            _actionMapping[JukeboxCommand.PlayAfterPaused] = PlayIfPaused;
             _actionMapping[JukeboxCommand.Pause] = PauseIfPlaying;
-            _actionMapping[JukeboxCommand.Toggle] = () => { _wasPaused = false; Spotify.SendAction(SpotifyAction.PlayPause); };
+            _actionMapping[JukeboxCommand.Toggle] = () => Spotify.SendAction(SpotifyAction.PlayPause); 
         }
 
         public void PerformAction(JukeboxCommand cmd) {
@@ -35,29 +34,24 @@ namespace Shutupify.Jukeboxes
         }
 
         private void PauseIfPlaying(){
-            if (!Spotify.IsPlaying()) {
-                _wasPaused = false;
+            if (!Spotify.IsPlaying())
                 return;
-            }
             Spotify.SendAction(SpotifyAction.PlayPause);
-            _wasPaused = true;
         }
 
         private void PlayIfPaused()
         {
             if (Spotify.IsPlaying())
-                return;
-            
+                return;         
             Spotify.SendAction(SpotifyAction.PlayPause);
-            _wasPaused = false;
         }
 
         public bool IsAvailable
         {
-            get;
-            set;
+            get {
+                return Spotify.IsAvailable();
+            }
         }
-
 
         public string Name
         {
@@ -67,20 +61,14 @@ namespace Shutupify.Jukeboxes
 
         public bool IsPlaying
         {
-            get { throw new NotImplementedException(); }
+            get { return Spotify.IsPlaying(); }
         }
 
 
         public bool IsActive
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
     }
 }

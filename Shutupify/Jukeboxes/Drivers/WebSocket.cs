@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace Shutupify.Jukeboxes.Drivers
 {
@@ -60,6 +61,44 @@ namespace Shutupify.Jukeboxes.Drivers
             return _clients.FirstOrDefault();
         }
 
+        public bool ClientConnected
+        {
+            get
+            {
+                return _clients.Count > 0;
+            }
+        }
+
+        internal bool IsPlaying(UserContext client)
+        {
+            if (client == null)
+                return false;
+
+            var playing = false;
+            var stopLoop = 0;
+
+            OnEventDelegate tempReceive = (ctx) => {
+                playing = (ctx.DataFrame.ToString() == "PLAYING");
+                stopLoop = 10000;
+            };
+
+            client.SetOnReceive(tempReceive);
+            client.Send("shutupify:PLAYING?");
+
+            while (stopLoop < 50) {
+                stopLoop++;
+                Thread.Sleep(10);
+            }
+
+            client.SetOnReceive(this.OnReceive);
+            return playing;
+        }
+
+        internal bool IsPlaying()
+        {
+            return IsPlaying(GetCurrentPlayer());
+        }
+
         #region IDisposable
         private bool disposed = false;
 
@@ -91,5 +130,7 @@ namespace Shutupify.Jukeboxes.Drivers
             Dispose(false);
         }
         #endregion
+
+
     }
 }

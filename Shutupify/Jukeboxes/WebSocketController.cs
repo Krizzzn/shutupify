@@ -26,11 +26,22 @@ namespace Shutupify.Jukeboxes
             //_messageMapping.Add(JukeboxCommand.PreviousTrack, "PreviousTrack");
             //_messageMapping.Add(JukeboxCommand.Toggle, "PlayPause");
             _messageMapping.Add(JukeboxCommand.PlayAfterPaused, "PLAY!");
-
-            this.IsAvailable = true;
         }
 
         public bool IsAvailable
+        {
+            get {
+                return _socket.ClientConnected;
+            }
+        }
+
+        public bool IsPlaying
+        {
+            get { return _socket.IsPlaying(); }
+        }
+
+
+        public bool IsActive
         {
             get;
             set;
@@ -77,23 +88,5 @@ namespace Shutupify.Jukeboxes
         }
         #endregion
 
-
-        public bool IsPlaying
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-
-        public bool IsActive
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

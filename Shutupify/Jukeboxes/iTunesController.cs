@@ -10,7 +10,6 @@ namespace Shutupify.Jukeboxes
     public class iTunesController : IJukebox
     {
         private iTunesAppClass _itunes;
-        private bool _wasPaused;
         private Dictionary<JukeboxCommand, string> _actionMapping;
 
         public iTunesController()
@@ -26,25 +25,28 @@ namespace Shutupify.Jukeboxes
 
         public void PerformAction(JukeboxCommand cmd)
         {
-            if (_itunes == null) { 
-                if (!IsItunesAvailable())
-                    return;
-                InitializeiTunes();
-            }
-
+            if (iTunes == null)
+                return;
+            var itunes = this.iTunes;
             if (!_actionMapping.ContainsKey(cmd))
                 return;
 
-            if (cmd == JukeboxCommand.PlayAfterPaused && !_wasPaused)
-                return;
-
-            _wasPaused = false;
             var methodToCall = _actionMapping[cmd];
+            itunes.GetType().GetMethod(methodToCall).Invoke(itunes, new object[0]);
+        }
 
-            if (cmd == JukeboxCommand.Pause && _itunes.PlayerState == ITPlayerState.ITPlayerStatePlaying)
-                _wasPaused = true;
-
-            _itunes.GetType().GetMethod(methodToCall).Invoke(_itunes, new object[0]);
+        private iTunesAppClass iTunes
+        {
+            get
+            {
+                if (_itunes == null)
+                {
+                    if (!(IsActive && IsAvailable))
+                        return null;
+                    InitializeiTunes();
+                }
+                return _itunes;
+            }
         }
 
         private void InitializeiTunes()
@@ -53,12 +55,6 @@ namespace Shutupify.Jukeboxes
 
             _itunes.OnQuittingEvent += KillITunes;
             _itunes.OnAboutToPromptUserToQuitEvent += KillITunes;
-        }
-
-        private bool IsItunesAvailable()
-        {
-            return Process.GetProcesses()
-                .Any(proc => proc.ProcessName.Equals("itunes", StringComparison.InvariantCultureIgnoreCase));
         }
 
         private void KillITunes()
@@ -77,26 +73,26 @@ namespace Shutupify.Jukeboxes
 
         public bool IsPlaying
         {
-            get { throw new NotImplementedException(); }
+            get {
+                if (iTunes == null)
+                    return false;
+                return iTunes.PlayerState == ITPlayerState.ITPlayerStatePlaying;
+            }
         }
 
 
         public bool IsActive
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get;
+            set;
         }
 
         public bool IsAvailable
         {
-            get;
-            set;
+            get {
+                return Process.GetProcesses()
+                    .Any(proc => proc.ProcessName.Equals("itunes", StringComparison.InvariantCultureIgnoreCase));
+            }
         }
     }
 }
