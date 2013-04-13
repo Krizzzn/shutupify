@@ -1,0 +1,211 @@
+require 'albacore'
+require 'rake/clean'
+
+
+folders = { :root   =>  File.dirname(__FILE__) + "/"}
+folders[:build] =       folders[:root] + "build/"
+folders[:binaries] =    folders[:root] + "lib/"
+folders[:test] =        folders[:build]+ "test/"
+folders[:test_data] =   folders[:test] + "data/"
+
+
+CLEAN.include(folders[:build] + "**")
+
+task :build => [:clean, :build_lib, :run_test, :build_app]
+
+desc "creates all directories necessary"
+task :ensure_dirs do |t|
+	identify t
+
+	folders.each {|_,value|
+		Dir.mkdir(value) unless Dir.exists?(value)
+	}
+end
+
+desc "gathers the references into the build directory. selects only the ones that dont exist"
+task :references => :ensure_dirs do |t|
+	identify t
+
+	files = ["ManagedWinapi.dll",
+			 "Alchemy.dll",
+			 "Interop.iTunesLib.dll",
+			 "Microsoft.Lync.Model.dll",
+			 "Microsoft.Office.Uc.dll"].map {|filename| folders[:binaries] + filename}
+	
+	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Lync.Model.dll"
+	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Office.Uc.dll"
+
+	copy_files_into_folder folders[:build], files
+end
+
+desc "gathers the references into the build directory. selects only the ones that dont exist"
+task :test_references => :ensure_dirs do |t|
+	identify t
+
+	files = ["ManagedWinapi.dll",
+			 "Alchemy.dll",
+			 "Interop.iTunesLib.dll",
+			 "Microsoft.Lync.Model.dll",
+			 "Microsoft.Office.Uc.dll",
+			 "nunit.framework.dll",
+			 "FluentAssertions.dll",
+			 "Moq.dll"].map {|filename| folders[:binaries] + filename}
+	
+	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Lync.Model.dll"
+	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Office.Uc.dll"
+	files << folders[:build] + "shutupify-lib.dll"
+
+	copy_files_into_folder folders[:test], files
+end
+
+desc "builds the shutupify-lib dll"
+csc :build_lib => :references do |csc|
+	identify "build_lib"
+
+	libraryname = folders[:build] + "shutupify-lib.dll"
+	File::delete libraryname if File::exists? libraryname
+
+	references = FileList["#{folders[:build]}*.dll"]
+	references.extend(FileListEnhancement)
+
+	for_compile = FileList["shutupify/**/*.cs"] 
+	for_compile.exclude(/.*Lync.*.cs/i) 		unless references.has? "Microsoft.Lync.Model.dll", "Microsoft.Office.Uc.dll"
+	for_compile.exclude(/.*itunes.*.cs/i) 		unless references.has? "Interop.iTunesLib.dll"
+	for_compile.exclude(/.hotkeysprobe.cs/i) 	unless references.has? "ManagedWinapi.dll"
+	for_compile.exclude(/.*websocket*.*.cs/i) 	unless references.has? "Alchemy.dll"
+
+	puts "compiling #{for_compile.length} files."
+
+	csc.use 		:net40
+	csc.compile 	for_compile
+	csc.references 	references
+	csc.target = 	:library
+	csc.output = 	libraryname
+end
+
+desc "builds the shutupify-app"
+csc :build_app => :build_lib do |csc|
+	identify "build_app"
+
+	application_name = folders[:build] + "shutupify-app.exe"
+	File::delete application_name if File::exists? application_name
+
+	references = FileList["bin/shutupify-lib.dll"]
+	references.extend(FileListEnhancement)
+
+	for_compile = FileList["Application/**.cs"] 
+	puts "compiling #{for_compile.length} files."
+
+	csc.use 		:net40
+	csc.compile 	for_compile
+	csc.references 	references
+	csc.target = 	:winexe
+	csc.main =      "frm.Program"
+	csc.output = 	application_name
+end
+
+desc "places testdata into test data directory"
+task :test_data => :build_mock do |t|
+	identify t
+
+	test_data = FileList["Tests/TestData/**"]
+	test_data.exclude /.*cs$/
+	copy_files_into_folder folders[:test_data], test_data
+end
+
+desc "build mock dll for testing"
+csc :build_mock => :build_lib do |csc|
+	identify "build_mock"
+
+	application_name = folders[:test_data] + "shutupify-mock.dll"
+	File::delete application_name if File::exists? application_name
+
+	references = FileList["bin/shutupify-lib.dll"]
+	references.extend(FileListEnhancement)
+
+	for_compile = FileList["Tests/TestData/*.cs"] 
+	puts "compiling #{for_compile.length} files."
+
+	csc.use 		:net40
+	csc.compile 	for_compile
+	csc.references 	references
+	csc.target = 	:library
+	csc.output = 	application_name	
+end
+
+desc "builds the shutupify-unit test dll"
+csc :build_test => [:build_lib, :test_references, :test_data] do |csc|
+	identify "build_test"
+
+	Dir.mkdir(folders[:test]) unless Dir.exists?(folders[:test])
+
+	output = folders[:test] + "shutupify-unit-tests.dll"
+	File::delete output if File::exists? output
+
+	references = FileList[folders[:binaries] + "*.dll", folders[:build] + "shutupify-lib.dll"]
+	references.extend(FileListEnhancement)
+
+	fail "Unit test references are not available in binary directory" unless references.has? "nunit.framework.dll",	"FluentAssertions.dll",	"Moq.dll"
+
+	for_compile = FileList["Tests/Unit/*.cs"] 
+	puts "compiling #{for_compile.length} files."
+
+	csc.use 		:net40
+	csc.compile 	for_compile
+	csc.references 	references
+	csc.target = 	:library
+	csc.output = 	output
+end
+
+desc "run unit tests"
+nunit :run_test => [:build_test] do |nunit|
+	identify "run_test"
+
+	nunit.command = "C:\\Program Files (x86)\\NUnit 2.5.10\\bin\\net-2.0\\nunit-console.exe" 
+
+	test_assemblies = FileList[folders[:test] + "*-tests.dll"]
+	nunit.assemblies test_assemblies
+end
+
+private
+
+module FileListEnhancement
+  def has?(*filenames)
+  	filenames.map { |filename| self.any? {|file| file =~ /#{filename}$/i } }.all?
+  end
+end
+
+def identify p1
+	puts ""
+	name = p1
+	if p1.is_a? Rake::Task
+		name = p1.name
+	end
+	puts "TASK: #{name.upcase}"
+	puts "-" * 80
+end
+
+def copy_files_into_folder (target_dir, *files)
+
+	existing = FileList[target_dir + "*"]
+	existing.extend(FileListEnhancement)
+	
+	if files.first.is_a? FileList
+		references = files.first
+	else
+		references = FileList[files]
+	end
+	references.extend(FileListEnhancement)
+	references.existing!
+		
+	references.to_ary.map {|file| 
+			dll = /[^\\\/]+$/i.match(file)[0]
+			[file, existing.has?(dll)]
+		}
+		.each{|file,exists| references.exclude file if exists }
+
+	if references.length > 0
+		puts "gathering reference dlls"
+		cp references, target_dir 
+	end
+end
