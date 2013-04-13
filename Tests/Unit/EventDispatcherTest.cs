@@ -117,5 +117,27 @@ namespace Shutupify.Unit
             itunes.Verify(m => m.PerformAction(It.IsAny<JukeboxCommand>()), Times.Never());
             spotify.Verify(m => m.PerformAction(It.IsAny<JukeboxCommand>()), Times.Exactly(2));
         }
+
+        [Test]
+        public void handles_play_after_paused_logic_start_playing() {
+            itunes.SetupGet(m => m.IsPlaying).Returns(true);
+            EventDispatcher dsp1 = new EventDispatcher(new[] { itunes.Object });
+
+            dsp1.Dispatch(JukeboxCommand.Pause);
+            itunes.SetupGet(m => m.IsPlaying).Returns(false);
+            dsp1.Dispatch(JukeboxCommand.PlayAfterPaused);
+            itunes.Verify(m => m.PerformAction(JukeboxCommand.Play), Times.Once());
+        }
+
+        [Test]
+        public void handles_play_after_paused_logic_keep_quite() {
+            spotify.SetupGet(m => m.IsPlaying).Returns(false);
+            EventDispatcher dsp1 = new EventDispatcher(new[] { spotify.Object });
+
+            dsp1.Dispatch(JukeboxCommand.Pause);
+            spotify.SetupGet(m => m.IsPlaying).Returns(false);
+            dsp1.Dispatch(JukeboxCommand.PlayAfterPaused);
+            spotify.Verify(m => m.PerformAction(JukeboxCommand.Play), Times.Never());
+        }
     }
 }
