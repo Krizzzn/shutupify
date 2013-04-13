@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AutoHooker.cs" />
+    <Compile Include="EventDispatcher.cs" />
     <Compile Include="Jukeboxes\Drivers\WebSocket.cs" />
     <Compile Include="Jukeboxes\iTunesController.cs" />
     <Compile Include="Jukeboxes\WebSocketController.cs" />

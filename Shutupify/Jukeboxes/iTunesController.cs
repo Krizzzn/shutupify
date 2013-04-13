@@ -24,7 +24,7 @@ namespace Shutupify.Jukeboxes
             _actionMapping.Add(JukeboxCommand.PlayAfterPaused, "Play");
         }
 
-        public bool Active
+        public bool IsActive
         {
             get;
             set;
@@ -78,6 +78,12 @@ namespace Shutupify.Jukeboxes
         public string Name
         {
             get { return "iTunes"; }
+        }
+
+
+        public bool IsPlaying
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

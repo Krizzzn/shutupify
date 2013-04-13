@@ -4,8 +4,9 @@ namespace Shutupify
 {
     public interface IJukebox : IName
     {
-        bool Active { get; set; }
         void PerformAction(JukeboxCommand cmd);
 
+        bool IsActive { get; set; }
+        bool IsPlaying { get; }
     }
 }

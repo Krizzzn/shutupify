@@ -185,7 +185,7 @@ namespace Shutupify.Unit
 
             auto.Hookup();
 
-            jukebox.VerifySet(m => m.Active = shouldBeActivated, Times.Once());
+            jukebox.VerifySet(m => m.IsActive = shouldBeActivated, Times.Once());
         }
     }
 }

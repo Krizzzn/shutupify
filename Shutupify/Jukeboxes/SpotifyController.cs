@@ -52,7 +52,7 @@ namespace Shutupify.Jukeboxes
             _wasPaused = false;
         }
 
-        public bool Active
+        public bool IsActive
         {
             get;
             set;
@@ -62,6 +62,12 @@ namespace Shutupify.Jukeboxes
         public string Name
         {
             get { return "Spotify"; }
+        }
+
+
+        public bool IsPlaying
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

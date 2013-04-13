@@ -40,7 +40,7 @@ namespace Shutupify
                     probe.StartObserving();
             });
 
-            _jukeboxes.ForEach(jukebox => jukebox.Active = IsActive(jukebox));
+            _jukeboxes.ForEach(jukebox => jukebox.IsActive = IsActive(jukebox));
         }
 
         private bool IsActive<T>(T item) where T : IName

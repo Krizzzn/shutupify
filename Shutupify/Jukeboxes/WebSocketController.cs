@@ -27,10 +27,10 @@ namespace Shutupify.Jukeboxes
             //_messageMapping.Add(JukeboxCommand.Toggle, "PlayPause");
             _messageMapping.Add(JukeboxCommand.PlayAfterPaused, "PLAY!");
 
-            this.Active = true;
+            this.IsActive = true;
         }
 
-        public bool Active
+        public bool IsActive
         {
             get;
             set;
@@ -76,5 +76,11 @@ namespace Shutupify.Jukeboxes
             Dispose(false);
         }
         #endregion
+
+
+        public bool IsPlaying
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

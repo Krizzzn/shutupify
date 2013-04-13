@@ -53,6 +53,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Testdata\MockPlugin.cs" />
     <Compile Include="Unit\AutoHookerTest.cs" />
+    <Compile Include="Unit\EventDispatcherTest.cs" />
     <Compile Include="Unit\FileSettingsReaderTest.cs" />
   </ItemGroup>
   <ItemGroup>
