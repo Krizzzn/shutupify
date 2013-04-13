@@ -90,7 +90,7 @@ csc :build_app => :build_lib do |csc|
 	application_name = folders[:build] + "shutupify-app.exe"
 	File::delete application_name if File::exists? application_name
 
-	references = FileList["bin/shutupify-lib.dll"]
+	references = FileList["#{folders[:build]}/shutupify-lib.dll"]
 	references.extend(FileListEnhancement)
 
 	for_compile = FileList["Application/**.cs"] 
@@ -120,7 +120,7 @@ csc :build_mock => :build_lib do |csc|
 	application_name = folders[:test_data] + "shutupify-mock.dll"
 	File::delete application_name if File::exists? application_name
 
-	references = FileList["bin/shutupify-lib.dll"]
+	references = FileList["#{folders[:build]}/shutupify-lib.dll"]
 	references.extend(FileListEnhancement)
 
 	for_compile = FileList["Tests/TestData/*.cs"] 
@@ -136,8 +136,6 @@ end
 desc "builds the shutupify-unit test dll"
 csc :build_test => [:build_lib, :test_references, :test_data] do |csc|
 	identify "build_test"
-
-	Dir.mkdir(folders[:test]) unless Dir.exists?(folders[:test])
 
 	output = folders[:test] + "shutupify-unit-tests.dll"
 	File::delete output if File::exists? output
