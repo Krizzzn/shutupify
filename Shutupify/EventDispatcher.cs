@@ -5,15 +5,19 @@ using System.Text;
 
 namespace Shutupify
 {
-    public class EventDispatcher
+    public class EventDispatcher : IEventDispatcher
     {
         private bool _wasPaused;
-        private IJukebox[] _jukeboxes;
         private IJukebox _lastJukebox;
+
+        public EventDispatcher()
+        {
+
+        }
 
         public EventDispatcher(IJukebox[] jukeboxes)
         {
-            this._jukeboxes = jukeboxes;
+            this.Jukeboxes = jukeboxes;
         }
 
         public void Dispatch(JukeboxCommand cmd)
@@ -36,13 +40,15 @@ namespace Shutupify
             _lastJukebox = player;
         }
 
+        public IEnumerable<IJukebox> Jukeboxes { get; set; }
+
         private IJukebox GetCurrentPlayer()
         {
-            var player = _jukeboxes.Where(p => p.IsPlaying && p.IsActive).FirstOrDefault();
+            var player = Jukeboxes.Where(p => p.IsActive && p.IsAvailable && p.IsPlaying).FirstOrDefault();
             if (player == null)
                 player = _lastJukebox;
-            if (player == null && _jukeboxes.Where(p => p.IsActive).Count() == 1)
-                player = _jukeboxes.Where(p => p.IsActive).Single();
+            if (player == null && Jukeboxes.Where(p => p.IsActive && p.IsAvailable).Count() == 1)
+                player = Jukeboxes.Where(p => p.IsAvailable && p.IsAvailable).Single();
 
             if (player != _lastJukebox)
                 _wasPaused = false;

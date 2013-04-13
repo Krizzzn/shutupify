@@ -52,7 +52,7 @@ namespace Shutupify.Jukeboxes
             _wasPaused = false;
         }
 
-        public bool IsActive
+        public bool IsAvailable
         {
             get;
             set;
@@ -68,6 +68,19 @@ namespace Shutupify.Jukeboxes
         public bool IsPlaying
         {
             get { throw new NotImplementedException(); }
+        }
+
+
+        public bool IsActive
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

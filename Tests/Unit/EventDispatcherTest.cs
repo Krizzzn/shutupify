@@ -22,6 +22,9 @@ namespace Shutupify.Unit
             spotify = new Mock<IJukebox>();
             superplayer = new Mock<IJukebox>();
 
+            itunes.SetupGet(m => m.IsAvailable).Returns(true);
+            spotify.SetupGet(m => m.IsAvailable).Returns(true);
+            superplayer.SetupGet(m => m.IsAvailable).Returns(true);
             itunes.SetupGet(m => m.IsActive).Returns(true);
             spotify.SetupGet(m => m.IsActive).Returns(true);
             superplayer.SetupGet(m => m.IsActive).Returns(true);
@@ -67,8 +70,8 @@ namespace Shutupify.Unit
             itunes.SetupGet(m => m.IsPlaying).Returns(false);
             superplayer.SetupGet(m => m.IsPlaying).Returns(false);
             spotify.SetupGet(m => m.IsPlaying).Returns(false);
-            itunes.SetupGet(m => m.IsActive).Returns(false);
-            superplayer.SetupGet(m => m.IsActive).Returns(false);
+            itunes.SetupGet(m => m.IsAvailable).Returns(false);
+            superplayer.SetupGet(m => m.IsAvailable).Returns(false);
 
             EventDispatcher dsp = new EventDispatcher(new[] { itunes.Object, spotify.Object, superplayer.Object });
 
@@ -86,9 +89,9 @@ namespace Shutupify.Unit
             itunes.SetupGet(m => m.IsPlaying).Returns(false);
             superplayer.SetupGet(m => m.IsPlaying).Returns(false);
             spotify.SetupGet(m => m.IsPlaying).Returns(true);
-            itunes.SetupGet(m => m.IsActive).Returns(false);
-            superplayer.SetupGet(m => m.IsActive).Returns(false);
-            spotify.SetupGet(m => m.IsActive).Returns(false);
+            itunes.SetupGet(m => m.IsAvailable).Returns(false);
+            superplayer.SetupGet(m => m.IsAvailable).Returns(false);
+            spotify.SetupGet(m => m.IsAvailable).Returns(false);
 
             EventDispatcher dsp = new EventDispatcher(new[] { itunes.Object, spotify.Object, superplayer.Object });
 
@@ -139,5 +142,17 @@ namespace Shutupify.Unit
             dsp1.Dispatch(JukeboxCommand.PlayAfterPaused);
             spotify.Verify(m => m.PerformAction(JukeboxCommand.Play), Times.Never());
         }
+
+        [Test]
+        public void ignores_inactive_jukeboxes() {
+            itunes.SetupGet(m => m.IsPlaying).Returns(true);
+            itunes.SetupGet(m => m.IsActive).Returns(false);
+            EventDispatcher dsp1 = new EventDispatcher(new[] { itunes.Object });
+
+            dsp1.Dispatch(JukeboxCommand.Pause);
+            dsp1.Dispatch(JukeboxCommand.Play);
+            dsp1.Dispatch(JukeboxCommand.NextTrack);
+            itunes.Verify(m => m.PerformAction(It.IsAny<JukeboxCommand>()), Times.Never());
+       }
     }
 }

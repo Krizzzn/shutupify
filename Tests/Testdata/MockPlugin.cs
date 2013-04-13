@@ -34,7 +34,7 @@ namespace Shutupify.Testdata.MockPlugin
             
         }
 
-        public bool IsActive
+        public bool IsAvailable
         {
             get;
             set;
@@ -50,6 +50,17 @@ namespace Shutupify.Testdata.MockPlugin
         public bool IsPlaying
         {
             get { return true; }
+        }
+
+
+        public bool IsActive
+        {
+            get {
+                return true;
+            }
+            set {
+                ;
+            }
         }
     }
 

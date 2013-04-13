@@ -76,6 +76,9 @@ namespace Shutupify.Unit
             auto.Clear();
             auto.ReactOnEvent += (a) => {if (a == JukeboxCommand.Toggle) eventFired = true;};
 
+            jukebox.SetupGet(m => m.IsPlaying).Returns(true);
+            jukebox.SetupGet(m => m.IsAvailable).Returns(true);
+            jukebox.SetupGet(m => m.IsActive).Returns(true);
             probe.Setup(m => m.StartObserving())
                 .Returns(true);
 
@@ -100,7 +103,7 @@ namespace Shutupify.Unit
             var jukebox = new Mock<IJukebox>();
             var jukeboxSettable = jukebox.As<ISettable>();
 
-            AutoHooker auto = new AutoHooker(settings.Object);
+            AutoHooker auto = new AutoHooker(settings.Object, null);
             auto.Clear();
 
             auto.Add(probe.Object);
@@ -124,7 +127,7 @@ namespace Shutupify.Unit
             var jukebox = new Mock<IJukebox>();
             var jukeboxSettable = jukebox.As<ISettable>();
 
-            AutoHooker auto = new AutoHooker(settings.Object);
+            AutoHooker auto = new AutoHooker(settings.Object, null);
             auto.Clear();
 
             auto.Add(probe.Object);
@@ -150,7 +153,7 @@ namespace Shutupify.Unit
 
             var jukebox = new Mock<IJukebox>();
 
-            AutoHooker auto = new AutoHooker(settings.Object);
+            AutoHooker auto = new AutoHooker(settings.Object, null);
             auto.Clear();
 
             auto.Add(probe.Object);
@@ -177,7 +180,7 @@ namespace Shutupify.Unit
             var jukeboxIName = jukebox.As<IName>();
             jukeboxIName.SetupGet(m => m.Name).Returns("Jukey");
 
-            AutoHooker auto = new AutoHooker(settings.Object);
+            AutoHooker auto = new AutoHooker(settings.Object, null);
             auto.Clear();
 
             auto.Add(probe.Object);

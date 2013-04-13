@@ -11,16 +11,19 @@ namespace Shutupify
     {
         List<IEventProbe> _probes;
         List<IJukebox> _jukeboxes;
+        IEventDispatcher _dispatcher;
 
-        public AutoHooker() : this(null)
+        public AutoHooker() : this(null, null)
         {}
 
-        public AutoHooker(Settings.ISettingsReader settings)
+        public AutoHooker(Settings.ISettingsReader settings, IEventDispatcher dispatcher)
         {
             _probes = new List<IEventProbe>();
             _jukeboxes = new List<IJukebox>();
             LoadFromAssembly(Assembly.GetExecutingAssembly());
             this._settings = settings;
+            this._dispatcher = dispatcher ?? new EventDispatcher();
+            _dispatcher.Jukeboxes = _jukeboxes;
         }
 
         public IEventProbe[] Probes { get { return _probes.ToArray(); } }
@@ -33,7 +36,7 @@ namespace Shutupify
             Setup(_jukeboxes);
 
             _probes.ForEach(probe => {
-                _jukeboxes.ForEach(jukebox => probe.ReactOnEvent += jukebox.PerformAction);
+                probe.ReactOnEvent += _dispatcher.Dispatch;
                 probe.ReactOnEvent += BubbleReactOnEvent;
 
                 if (IsActive(probe))
