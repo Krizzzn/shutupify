@@ -1,31 +1,40 @@
 
 shutupify = 
-  initialize: -> 
-    console.log "initialize"
-    audio_elements = document.getElementsByTagName "audio"
-    return if audio_elements.length = 0
-    console.log "found targets"
-    shutupify.register_event audio_element for audio_element in audio_elements
-    shutupify.initialize_events()
 
-  register_event: (audio) ->
-    audio.addEventListener "play", ->
-      chrome.runtime.sendMessage {"playback": "started", "player_id": this.id}
-    audio.addEventListener "pause", ->
-      chrome.runtime.sendMessage {"playback": "paused", "player_id": this.id}
+  initialize: -> 
+    @players = []
+    this.initialize_all_players()
+    console.log @players
+    
+    shutupify.initialize_events()
+    this
+
+#  register_event: (audio) ->
+#    audio.addEventListener "play", ->
+#      chrome.runtime.sendMessage {"playback": "started", "player_id": this.id}
+#    audio.addEventListener "pause", ->
+#      chrome.runtime.sendMessage {"playback": "paused", "player_id": this.id}
 
   initialize_events: ->
-    chrome.runtime.onMessage.addListener (message, sender) ->
-      splitted = message.split ":"
-      current_player = document.getElementById splitted[1]
-      switch splitted[0]
-        when "PLAY!" then current_player.play()
-        when "PAUSE!" then current_player.pause()
-        when "PLAYING?" then console.log current_player.paused
-      console.log current_player, splitted[1], message
+    self = this
+    chrome.runtime.onMessage.addListener (message, sender, sendResponse) ->
+      console.log self.current_player, message
+      switch message
+        when "PLAY!" then self.current_player.play()
+        when "PAUSE!" then self.current_player.pause()
+        when "TOGGLE!" then self.current_player.toggle()
+        when "PLAYING?"
+          console.log self.current_player.is_playing(), sendResponse
+          sendResponse(foo: self.current_player.is_playing())
 
-document.addEventListener "DOMContentLoaded", ->
-  shutupify.initialize()
+  send: (msg, player) ->
+    @current_player = player
+    playing = (player.is_playing()) ? "started" : "paused"
+    chrome.runtime.sendMessage {"playback": playing }
+    console.log msg, player
+
+  initialize_all_players: ->
+    @players = @players.concat Html5Player.find_players(this)
 
 shutupify.initialize()
 
