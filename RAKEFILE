@@ -7,6 +7,7 @@ folders[:build] =       folders[:root] + "build/"
 folders[:binaries] =    folders[:root] + "lib/"
 folders[:test] =        folders[:build]+ "test/"
 folders[:test_data] =   folders[:test] + "data/"
+folders[:chrome] =      folders[:build]+ "chrome/"
 
 
 CLEAN.include(folders[:build] + "**")
@@ -165,6 +166,23 @@ nunit :run_test => [:build_test] do |nunit|
 	nunit.assemblies test_assemblies
 end
 
+desc "builds the chrome extension"
+task :build_chrome => :ensure_dirs do |task|
+	identify task
+	require 'coffee-script'
+
+	source_dir = folders[:root] + "ChromeExtension/"
+
+	content = FileList[source_dir+"/Drivers/*.coffee", source_dir + "shutupify-content.coffee"]
+
+	build_coffeescript folders[:chrome]+"shutupify.js", source_dir + "shutupify.coffee"
+	build_coffeescript folders[:chrome]+"shutupify-content.js", content
+
+	extension_files = FileList[source_dir+"manifest.json", source_dir+"icon.png"]
+	extension_files.existing!
+	cp extension_files, folders[:chrome] 
+end
+
 private
 
 module FileListEnhancement
@@ -183,17 +201,22 @@ def identify p1
 	puts "-" * 80
 end
 
+def ensure_filelist (*files)	
+	if files.first.is_a? FileList
+		out = files.first
+	else
+		out = FileList[files]
+	end
+	out.extend(FileListEnhancement)
+	out
+end
+
 def copy_files_into_folder (target_dir, *files)
 
 	existing = FileList[target_dir + "*"]
 	existing.extend(FileListEnhancement)
-	
-	if files.first.is_a? FileList
-		references = files.first
-	else
-		references = FileList[files]
-	end
-	references.extend(FileListEnhancement)
+
+	references = ensure_filelist files
 	references.existing!
 		
 	references.to_ary.map {|file| 
@@ -206,4 +229,20 @@ def copy_files_into_folder (target_dir, *files)
 		puts "gathering reference dlls"
 		cp references, target_dir 
 	end
+end
+
+def build_coffeescript (target, *files)
+	
+	for_build = ensure_filelist files
+	for_build.existing!
+
+	puts "compiling #{for_build.count} file/s into #{target}"
+
+	coffee_script = for_build.to_ary.map {|file|
+		File.read(file)
+	}.join("\n\n")
+
+	java_script = CoffeeScript.compile coffee_script
+	
+	File.open(target, 'w') { |file| file.write java_script}
 end
