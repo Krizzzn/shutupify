@@ -3,7 +3,7 @@
 
   "name": "shutupify, for Chrome!",
   "description": "Control playback of HTML audio elements with shutupify.",
-  "version": "0.1",
+  "version": "@VERSION@",
   "background": { "scripts": ["shutupify.js"] },
   "permissions": [
     "tabs","<all_urls>"

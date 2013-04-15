@@ -12,7 +12,7 @@ folders[:chrome] =      folders[:build]+ "chrome/"
 
 CLEAN.include(folders[:build] + "**")
 
-task :build => [:clean, :build_lib, :run_test, :build_app]
+task :build => [:clean, :build_lib, :run_test, :build_app, :build_chrome]
 
 desc "creates all directories necessary"
 task :ensure_dirs do |t|
@@ -178,9 +178,16 @@ task :build_chrome => :ensure_dirs do |task|
 	build_coffeescript folders[:chrome]+"shutupify.js", source_dir + "shutupify.coffee"
 	build_coffeescript folders[:chrome]+"shutupify-content.js", content
 
+	puts "\ncopying files to #{folders[:chrome]}"
 	extension_files = FileList[source_dir+"manifest.json", source_dir+"icon.png"]
 	extension_files.existing!
 	cp extension_files, folders[:chrome] 
+
+  	version = File.read(folders[:root] + "VERSION")
+	puts "\ntagging manifest.json with version #{version}"
+  	text = File.read(folders[:chrome] + "manifest.json")
+  	File.open(folders[:chrome] + "manifest.json", "w") {|file| file.puts text.gsub(/@VERSION@/, version)}
+
 end
 
 private
@@ -236,7 +243,7 @@ def build_coffeescript (target, *files)
 	for_build = ensure_filelist files
 	for_build.existing!
 
-	puts "compiling #{for_build.count} file/s into #{target}"
+	puts "\ncompiling #{for_build.count} file/s into #{target}"
 
 	coffee_script = for_build.to_ary.map {|file|
 		File.read(file)
