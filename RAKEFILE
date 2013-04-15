@@ -69,6 +69,12 @@ csc :build_lib => :references do |csc|
 	references = FileList["#{folders[:build]}*.dll"]
 	references.extend(FileListEnhancement)
 
+	puts "\n"
+	puts "Lync Probe was not added because reference to Microsoft.Lync.Model.dll, Microsoft.Office.Uc.dll is missing." unless references.has? "Microsoft.Lync.Model.dll", "Microsoft.Office.Uc.dll"
+	puts "Itunes Controller was not added because reference to Interop.iTunesLib.dll is missing." unless references.has? "Interop.iTunesLib.dll"
+	puts "Hotkeys Probe was not added because reference to ManagedWinapi.dll is missing." unless references.has? "ManagedWinapi.dll"
+	puts "Websocket controller was not added because reference to Alchemy.dll is missing." unless references.has? "Alchemy.dll"
+
 	for_compile = FileList["shutupify/**/*.cs"] 
 	for_compile.exclude(/.*Lync.*.cs/i) 		unless references.has? "Microsoft.Lync.Model.dll", "Microsoft.Office.Uc.dll"
 	for_compile.exclude(/.*itunes.*.cs/i) 		unless references.has? "Interop.iTunesLib.dll"
