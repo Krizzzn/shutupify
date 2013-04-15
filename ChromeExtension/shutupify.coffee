@@ -37,7 +37,7 @@ chrome.browserAction.onClicked.addListener (tab) ->
 
 chrome.runtime.onMessage.addListener (player_sent, sender) ->
   console.log "tab sent", player_sent, shutupify
-  if !shutupify.player or shutupify.player != player_sent
+  if !shutupify.player or shutupify.player.player_id != player_sent.player_id
     console.log "registered new player"
     shutupify.player = new Player sender.tab, player_sent.player_id
   shutupify.player.playing = (player_sent.playback == "started")

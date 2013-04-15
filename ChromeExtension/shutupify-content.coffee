@@ -22,7 +22,7 @@ shutupify =
   send: (msg, player) ->
     @current_player = player
     playing = (player.is_playing()) ? "started" : "paused"
-    chrome.runtime.sendMessage {"playback": playing }
+    chrome.runtime.sendMessage {"playback": playing, "player_id": player.id }
     console.log msg, player
 
   initialize_all_players: ->

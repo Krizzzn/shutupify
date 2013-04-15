@@ -1,11 +1,13 @@
 
 class Html5Player 
   constructor: (@shutupify, @htmlelement) ->
-  	this.register_events()
-  	self = this;
-  	window.setTimeout () ->
-  	  self.shutupify.send "play", self if self.is_playing()
-  	, 250
+    this.register_events()
+    self = this;
+    @id = @htmlelement.id || "player_" + Math.floor(Math.random()*100000)
+    window.setTimeout () ->
+      self.shutupify.send "play", self if self.is_playing()
+    , 250
+    console.log @id
 
   is_playing: () ->
   	!@htmlelement.paused
