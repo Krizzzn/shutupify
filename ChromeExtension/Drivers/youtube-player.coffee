@@ -27,5 +27,8 @@ class YoutubePlayer extends Player
   @find_players = (shutupify) ->
     element = document.getElementById("movie_player")
     player = new YoutubePlayer(shutupify, element) if element?
-    [player]
+    if player?
+      [player]
+    else
+      []
   
