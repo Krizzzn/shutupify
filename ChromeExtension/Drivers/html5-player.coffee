@@ -1,13 +1,5 @@
 
-class Html5Player 
-  constructor: (@shutupify, @htmlelement) ->
-    this.register_events()
-    self = this;
-    @id = @htmlelement.id || "player_" + Math.floor(Math.random()*100000)
-    window.setTimeout () ->
-      self.shutupify.send "play", self if self.is_playing()
-    , 250
-    console.log @id
+class Html5Player extends Player
 
   is_playing: () ->
   	!@htmlelement.paused
@@ -26,18 +18,6 @@ class Html5Player
   pause: ->
   	@htmlelement.pause()
   	this
-
-  toggle: ->
-  	if (this.is_playing())
-      this.pause()
-    else
-      this.play()
-    this
-
-  next: ->
-
-  prev: ->
-
 
   @find_players = (shutupify) ->
     html_elements = document.querySelectorAll("audio, video");
