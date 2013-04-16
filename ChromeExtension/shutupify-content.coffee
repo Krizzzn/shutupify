@@ -27,5 +27,6 @@ shutupify =
 
   initialize_all_players: ->
     @players = @players.concat Html5Player.find_players(this)
+    @players = @players.concat YoutubePlayer.find_players(this)
 
 shutupify.initialize()
