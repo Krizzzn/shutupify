@@ -16,6 +16,12 @@
       "matches": ["<all_urls>"],
       "js": ["shutupify-content.js"],
       "run_at": "document_idle"
-    }
+    },
+    {
+      "matches": ["http://www.youtube.com/embed/*"],
+      "js": ["shutupify-content.js"],
+      "all_frames": true,
+      "run_at": "document_idle"
+    }    
   ]
 }
