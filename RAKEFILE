@@ -251,7 +251,7 @@ def build_coffeescript (target, *files)
 
 	puts "\ncompiling #{for_build.count} file/s into #{target}"
 
-	coffee_script = for_build.to_ary.map {|file|
+	coffee_script = for_build.to_ary.sort.map {|file|
 		File.read(file)
 	}.join("\n\n")
 
