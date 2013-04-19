@@ -2,6 +2,8 @@
 namespace :chrome do
 	require 'coffee-script'
 
+	CHROME = '"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"'
+	NO_CONSOLE_LOG = false
 
 	desc "builds the chrome extension"
 	task :build => :ensure_dirs do |task|
@@ -25,6 +27,24 @@ namespace :chrome do
 		File.open(FOLDERS[:chrome] + "manifest.json", "w") {|file| file.puts text.gsub(/@VERSION@/, version)}
 	end
 
+	desc "pack chrome extension as crx file"
+	task :pack  do |task|
+		identify task
+
+		NO_CONSOLE_LOG = true
+		Rake::Task["chrome:build"].invoke
+		source_dir = FOLDERS[:root] + "ChromeExtension/"
+		puts "\ncopying files to #{FOLDERS[:chrome]}"
+		extension_files = FileList[source_dir+"chrome.pem"]
+		extension_files.existing!
+		cp extension_files, FOLDERS[:build] 
+
+		puts "\npacking chrome extension as .crx"
+		`#{CHROME} --pack-extension=#{FOLDERS[:chrome]} --pack-extension-key=#{FOLDERS[:build]}chrome.pem`
+		
+		rm "#{FOLDERS[:build]}chrome.pem"
+	end
+
 	private 
 	def build_coffeescript (target, *files)
 
@@ -37,7 +57,7 @@ namespace :chrome do
 			File.read(file)
 			}.join("\n\n")
 
-	# coffee_script.gsub! /.*console.log.*?\n/, ""
+		coffee_script.gsub! /.*console.log.*?\n/, "" if NO_CONSOLE_LOG
 
 		java_script = CoffeeScript.compile coffee_script
 	
