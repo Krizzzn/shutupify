@@ -1,16 +1,16 @@
 require 'albacore'
 require 'rake/clean'
+$: << './'
+
+FOLDERS = { :root   =>  File.dirname(__FILE__) + "/"}
+FOLDERS[:build] =       FOLDERS[:root] + "build/"
+FOLDERS[:binaries] =    FOLDERS[:root] + "lib/"
+FOLDERS[:test] =        FOLDERS[:build]+ "test/"
+FOLDERS[:test_data] =   FOLDERS[:test] + "data/"
+FOLDERS[:chrome] =      FOLDERS[:build]+ "chrome/"
 
 
-folders = { :root   =>  File.dirname(__FILE__) + "/"}
-folders[:build] =       folders[:root] + "build/"
-folders[:binaries] =    folders[:root] + "lib/"
-folders[:test] =        folders[:build]+ "test/"
-folders[:test_data] =   folders[:test] + "data/"
-folders[:chrome] =      folders[:build]+ "chrome/"
-
-
-CLEAN.include(folders[:build] + "**")
+CLEAN.include(FOLDERS[:build] + "**")
 
 task :build => [:clean, :build_lib, :run_test, :build_app, :build_chrome]
 
@@ -18,7 +18,7 @@ desc "creates all directories necessary"
 task :ensure_dirs do |t|
 	identify t
 
-	folders.each {|_,value|
+	FOLDERS.each {|_,value|
 		Dir.mkdir(value) unless Dir.exists?(value)
 	}
 end
@@ -31,12 +31,12 @@ task :references => :ensure_dirs do |t|
 			 "Alchemy.dll",
 			 "Interop.iTunesLib.dll",
 			 "Microsoft.Lync.Model.dll",
-			 "Microsoft.Office.Uc.dll"].map {|filename| folders[:binaries] + filename}
+			 "Microsoft.Office.Uc.dll"].map {|filename| FOLDERS[:binaries] + filename}
 	
 	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Lync.Model.dll"
 	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Office.Uc.dll"
 
-	copy_files_into_folder folders[:build], files
+	copy_files_into_folder FOLDERS[:build], files
 end
 
 desc "gathers the references into the build directory. selects only the ones that dont exist"
@@ -50,23 +50,23 @@ task :test_references => :ensure_dirs do |t|
 			 "Microsoft.Office.Uc.dll",
 			 "nunit.framework.dll",
 			 "FluentAssertions.dll",
-			 "Moq.dll"].map {|filename| folders[:binaries] + filename}
+			 "Moq.dll"].map {|filename| FOLDERS[:binaries] + filename}
 	
 	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Lync.Model.dll"
 	files << "C:\\Program Files (x86)\\Microsoft Office\\Office15\\LyncSDK\\Assemblies\\Desktop\\Microsoft.Office.Uc.dll"
-	files << folders[:build] + "shutupify-lib.dll"
+	files << FOLDERS[:build] + "shutupify-lib.dll"
 
-	copy_files_into_folder folders[:test], files
+	copy_files_into_folder FOLDERS[:test], files
 end
 
 desc "builds the shutupify-lib dll"
 csc :build_lib => :references do |csc|
 	identify "build_lib"
 
-	libraryname = folders[:build] + "shutupify-lib.dll"
+	libraryname = FOLDERS[:build] + "shutupify-lib.dll"
 	File::delete libraryname if File::exists? libraryname
 
-	references = FileList["#{folders[:build]}*.dll"]
+	references = FileList["#{FOLDERS[:build]}*.dll"]
 	references.extend(FileListEnhancement)
 
 	puts "\n"
@@ -94,10 +94,10 @@ desc "builds the shutupify-app"
 csc :build_app => :build_lib do |csc|
 	identify "build_app"
 
-	application_name = folders[:build] + "shutupify-app.exe"
+	application_name = FOLDERS[:build] + "shutupify-app.exe"
 	File::delete application_name if File::exists? application_name
 
-	references = FileList["#{folders[:build]}/shutupify-lib.dll"]
+	references = FileList["#{FOLDERS[:build]}/shutupify-lib.dll"]
 	references.extend(FileListEnhancement)
 
 	for_compile = FileList["Application/**.cs"] 
@@ -117,17 +117,17 @@ task :test_data => :build_mock do |t|
 
 	test_data = FileList["Tests/TestData/**"]
 	test_data.exclude /.*cs$/
-	copy_files_into_folder folders[:test_data], test_data
+	copy_files_into_folder FOLDERS[:test_data], test_data
 end
 
 desc "build mock dll for testing"
 csc :build_mock => :build_lib do |csc|
 	identify "build_mock"
 
-	application_name = folders[:test_data] + "shutupify-mock.dll"
+	application_name = FOLDERS[:test_data] + "shutupify-mock.dll"
 	File::delete application_name if File::exists? application_name
 
-	references = FileList["#{folders[:build]}/shutupify-lib.dll"]
+	references = FileList["#{FOLDERS[:build]}/shutupify-lib.dll"]
 	references.extend(FileListEnhancement)
 
 	for_compile = FileList["Tests/TestData/*.cs"] 
@@ -144,10 +144,10 @@ desc "builds the shutupify-unit test dll"
 csc :build_test => [:build_lib, :test_references, :test_data] do |csc|
 	identify "build_test"
 
-	output = folders[:test] + "shutupify-unit-tests.dll"
+	output = FOLDERS[:test] + "shutupify-unit-tests.dll"
 	File::delete output if File::exists? output
 
-	references = FileList[folders[:binaries] + "*.dll", folders[:build] + "shutupify-lib.dll"]
+	references = FileList[FOLDERS[:binaries] + "*.dll", FOLDERS[:build] + "shutupify-lib.dll"]
 	references.extend(FileListEnhancement)
 
 	fail "Unit test references are not available in binary directory" unless references.has? "nunit.framework.dll",	"FluentAssertions.dll",	"Moq.dll"
@@ -168,7 +168,7 @@ nunit :run_test => [:build_test] do |nunit|
 
 	nunit.command = "C:\\Program Files (x86)\\NUnit 2.5.10\\bin\\net-2.0\\nunit-console.exe" 
 
-	test_assemblies = FileList[folders[:test] + "*-tests.dll"]
+	test_assemblies = FileList[FOLDERS[:test] + "*-tests.dll"]
 	nunit.assemblies test_assemblies
 end
 
@@ -177,22 +177,22 @@ task :build_chrome => :ensure_dirs do |task|
 	identify task
 	require 'coffee-script'
 
-	source_dir = folders[:root] + "ChromeExtension/"
+	source_dir = FOLDERS[:root] + "ChromeExtension/"
 
 	content = FileList[source_dir+"/Drivers/*.coffee", source_dir + "shutupify-content.coffee"]
 
-	build_coffeescript folders[:chrome]+"shutupify.js", source_dir + "shutupify.coffee"
-	build_coffeescript folders[:chrome]+"shutupify-content.js", content
+	build_coffeescript FOLDERS[:chrome]+"shutupify.js", source_dir + "shutupify.coffee"
+	build_coffeescript FOLDERS[:chrome]+"shutupify-content.js", content
 
-	puts "\ncopying files to #{folders[:chrome]}"
+	puts "\ncopying files to #{FOLDERS[:chrome]}"
 	extension_files = FileList[source_dir+"manifest.json", source_dir+"icon.png"]
 	extension_files.existing!
-	cp extension_files, folders[:chrome] 
+	cp extension_files, FOLDERS[:chrome] 
 
-  	version = File.read(folders[:root] + "VERSION")
+  	version = File.read(FOLDERS[:root] + "VERSION")
 	puts "\ntagging manifest.json with version #{version}"
-  	text = File.read(folders[:chrome] + "manifest.json")
-  	File.open(folders[:chrome] + "manifest.json", "w") {|file| file.puts text.gsub(/@VERSION@/, version)}
+  	text = File.read(FOLDERS[:chrome] + "manifest.json")
+  	File.open(FOLDERS[:chrome] + "manifest.json", "w") {|file| file.puts text.gsub(/@VERSION@/, version)}
 
 end
 
@@ -254,6 +254,8 @@ def build_coffeescript (target, *files)
 	coffee_script = for_build.to_ary.sort.map {|file|
 		File.read(file)
 	}.join("\n\n")
+
+	# coffee_script.gsub! /.*console.log.*?\n/, ""
 
 	java_script = CoffeeScript.compile coffee_script
 	
