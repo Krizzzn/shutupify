@@ -85,6 +85,7 @@ namespace :win do
 		references.extend(FileListEnhancement)
 	
 		for_compile = FileList["Application/**.cs"] 
+		for_compile.include(FOLDERS[:root] + "_AssemblyInfo.cs")
 		puts "compiling #{for_compile.length} files."
 	
 		csc.use 		:net40

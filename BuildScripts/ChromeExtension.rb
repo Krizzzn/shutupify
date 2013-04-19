@@ -31,9 +31,11 @@ namespace :chrome do
 	task :pack  do |task|
 		identify task
 
+		source_dir = FOLDERS[:root] + "ChromeExtension/"
+		fail "Could not find the key file at #{source_dir+"chrome.pem"}. CRX file could not be created." unless File::exists? source_dir+"chromle.pem"
+
 		NO_CONSOLE_LOG = true
 		Rake::Task["chrome:build"].invoke
-		source_dir = FOLDERS[:root] + "ChromeExtension/"
 		puts "\ncopying files to #{FOLDERS[:chrome]}"
 		extension_files = FileList[source_dir+"chrome.pem"]
 		extension_files.existing!
