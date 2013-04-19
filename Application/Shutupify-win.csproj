@@ -67,7 +67,6 @@
       <DependentUpon>ShutupifyView.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ShutupifyView.resx">
       <DependentUpon>ShutupifyView.cs</DependentUpon>
     </EmbeddedResource>

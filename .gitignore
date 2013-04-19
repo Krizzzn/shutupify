@@ -3,6 +3,8 @@
 
 #Project Specifics
 Lib/*.dll
+*AssemblyInfo.cs
+*.pem
 
 # User-specific files
 *.suo
