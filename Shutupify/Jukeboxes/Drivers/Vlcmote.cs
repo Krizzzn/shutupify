@@ -148,11 +148,11 @@ namespace Shutupify.Jukeboxes.Drivers {
             {
                 if (disposing)
                 {
-                    if (Client != null)
+                    if (_client != null)
                     {
                         SendCommand("logout", "");
                         Thread.Sleep(100);
-                        Client.Close();
+                        _client.Close();
                         _client = null;
                     }
                 }

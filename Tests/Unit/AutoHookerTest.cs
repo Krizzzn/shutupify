@@ -8,6 +8,7 @@ using Moq.Linq;
 using Shutupify;
 using System.Reflection;
 using FluentAssertions;
+using FluentAssertions.Numeric;
 using Shutupify.Probes;
 using Shutupify.Settings;
 
@@ -189,6 +190,24 @@ namespace Shutupify.Unit
             auto.Hookup();
 
             jukebox.VerifySet(m => m.IsActive = shouldBeActivated, Times.Once());
+        }
+
+        [Test]
+        public void autohooker_performance() {
+            var probe = new Mock<IEventProbe>();
+            var jukebox = new Mock<IJukebox>();
+
+            Action a = () =>
+            {
+                AutoHooker auto = new AutoHooker();
+                auto.Clear();
+
+                auto.Add(probe.Object);
+                auto.Add(jukebox.Object);
+
+                auto.Hookup();
+            };
+            a.ExecutionTime().ShouldNotExceed(1.Seconds());
         }
     }
 }
