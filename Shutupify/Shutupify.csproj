@@ -39,8 +39,10 @@
     <Compile Include="AutoHooker.cs" />
     <Compile Include="EventDispatcher.cs" />
     <Compile Include="IEventDispatcher.cs" />
+    <Compile Include="Jukeboxes\Drivers\Vlcmote.cs" />
     <Compile Include="Jukeboxes\Drivers\WebSocket.cs" />
     <Compile Include="Jukeboxes\iTunesController.cs" />
+    <Compile Include="Jukeboxes\VLController.cs" />
     <Compile Include="Jukeboxes\WebSocketController.cs" />
     <Compile Include="Probes\HotkeysProbe.cs" />
     <Compile Include="Jukeboxes\IJukebox.cs" />
