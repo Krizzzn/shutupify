@@ -158,5 +158,21 @@ namespace Shutupify.Unit
             keys.SerializeToString().Should().BeEquivalentTo("key1 = 123\r\n#key2 = ");
         }
 
+        [Test]
+        public void handles_multi_hash()
+        {
+            var DefTestData = "###########################################\r\nkey1 = 234";
+            var DefSubject = new SettingsReader(DefTestData);
+            DefSubject["key1"].Should().BeEquivalentTo("234");
+        }
+
+        [Test]
+        public void handles_default_setup_file()
+        {
+            var DefTestData = System.IO.File.ReadAllText(@"data\default-shutupify-settings");
+            var DefSubject = new SettingsReader(DefTestData);
+            DefSubject["Hotkeys:activated"].Should().BeEquivalentTo("yes");
+        }
+
     }
 }

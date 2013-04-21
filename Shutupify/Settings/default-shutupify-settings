@@ -1,0 +1,28 @@
+#############################
+# SHUTUPIFY - SETTINGS FILE #
+#############################
+
+# The hotkeys probe
+Hotkeys:activated = yes
+Hotkeys:Play = CTRL+ALT+SHIFT+Up
+Hotkeys:Pause = CTRL+ALT+SHIFT+Down
+Hotkeys:PreviousTrack = CTRL+ALT+SHIFT+Left
+Hotkeys:NextTrack = CTRL+ALT+SHIFT+Right
+
+# Away-from-keyboard Probe
+AFK:activated = yes
+
+# Lync Incoming Call Probe
+LyncCall:activated = yes
+
+# iTunes Controller
+iTunes:activated = yes
+
+# VLC Controller
+VLC:activated = yes
+
+# WebSocket Controller (needs Chrome extension)
+WebSocket:activated = yes
+
+# Spotify Controller
+Spotify:activated = yes

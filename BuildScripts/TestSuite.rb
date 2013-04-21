@@ -24,6 +24,7 @@ namespace :tests do
 		identify t
 	
 		test_data = FileList["Tests/TestData/**"]
+		test_data.include FOLDERS[:root] + "shutupify/Settings/default-shutupify-settings"
 		test_data.exclude /.*cs$/
 		copy_files_into_folder FOLDERS[:test_data], test_data
 	end

@@ -70,6 +70,7 @@ namespace Shutupify.Settings
         private void ReadKeys()
         {
             _keys = this._settings
+                .Where(line => !Regex.IsMatch(line, @"^( |#)*$"))
                 .Select(line => (Regex.Match(line, @"^(\W|\#)*.*?(?=\W*\=)").Value ?? "").Trim())
                 .Select(key => key.Replace("#","").Trim())
                 .Where(key => !string.IsNullOrEmpty(key))
