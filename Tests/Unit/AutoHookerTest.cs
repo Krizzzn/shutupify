@@ -135,7 +135,7 @@ namespace Shutupify.Unit
             auto.Add(jukebox.Object);
 
             auto.Hookup();
-            settings.Verify(m => m.EnsureKey("probe:activated", "no"), Times.Once());
+            settings.Verify(m => m.EnsureKey("probe:Activated", "no"), Times.Once());
         }
 
         [Test]
@@ -147,7 +147,7 @@ namespace Shutupify.Unit
         public void obeys_probe_type_activated_key(string returns, bool shouldBeActivated)
         {
             var settings = new Mock<ISettingsReader>();
-            settings.SetupGet(m => m["Proby:activated"]).Returns(returns);
+            settings.SetupGet(m => m["Proby:Activated"]).Returns(returns);
 
             var probe = new Mock<IEventProbe>();
             probe.SetupGet(m => m.Name).Returns("Proby");
@@ -174,7 +174,7 @@ namespace Shutupify.Unit
         public void obeys_jukebox_type_activated_key(string returns, bool shouldBeActivated)
         {
             var settings = new Mock<ISettingsReader>();
-            settings.SetupGet(m => m["Jukey:activated"]).Returns(returns);
+            settings.SetupGet(m => m["Jukey:Activated"]).Returns(returns);
 
             var probe = new Mock<IEventProbe>();
             var jukebox = new Mock<IJukebox>();

@@ -3,7 +3,7 @@
 #############################
 
 # The hotkeys probe
-Hotkeys:activated = yes
+Hotkeys:Activated = yes
 Hotkeys:Play = CTRL+ALT+SHIFT+Up
 Hotkeys:Pause = CTRL+ALT+SHIFT+Down
 Hotkeys:PreviousTrack = CTRL+ALT+SHIFT+Left
@@ -11,21 +11,21 @@ Hotkeys:NextTrack = CTRL+ALT+SHIFT+Right
 #Hotkeys:Toggle = 
 
 # Away-from-keyboard Probe
-AFK:activated = yes
+AFK:Activated = yes
 
 # Lync Incoming Call Probe
-LyncCall:activated = yes
+LyncCall:Activated = yes
 
 # iTunes Controller
-iTunes:activated = yes
+iTunes:Activated = yes
 
 # VLC Controller
-VLC:activated = yes
+VLC:Activated = yes
 
 # WebSocket Controller (needs Chrome extension)
-WebSocket:activated = yes
+WebSocket:Activated = yes
 WebSocket:Port = 9971
 #WebSocket:ChromeExtension = mnkmaflojambglihddgpalgbfmogokfd
 
 # Spotify Controller
-Spotify:activated = yes
+Spotify:Activated = yes

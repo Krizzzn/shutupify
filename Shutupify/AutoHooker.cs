@@ -52,7 +52,7 @@ namespace Shutupify
                 return true;
 
             var validValues = new[]{"yes", "true", "1", "active", "on"};
-            return (validValues.Contains((_settings[item.Name + ":activated"]??"").ToLower()));
+            return (validValues.Contains((_settings[item.Name + ":Activated"]??"").ToLower()));
         }
 
         private void Setup<T>(List<T> list) where T : IName
@@ -61,7 +61,7 @@ namespace Shutupify
                 return;
 
             list.ForEach((item) => {
-                _settings.EnsureKey(item.Name + ":activated", "no");
+                _settings.EnsureKey(item.Name + ":Activated", "no");
 
                 if (item is ISettable)
                     ((ISettable)item).ReadSettings(_settings);

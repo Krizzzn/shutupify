@@ -171,7 +171,7 @@ namespace Shutupify.Unit
         {
             var DefTestData = System.IO.File.ReadAllText(@"data\default-shutupify-settings");
             var DefSubject = new SettingsReader(DefTestData);
-            DefSubject["Hotkeys:activated"].Should().BeEquivalentTo("yes");
+            DefSubject["Hotkeys:Activated"].Should().BeEquivalentTo("yes");
         }
 
     }
