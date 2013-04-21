@@ -10,18 +10,18 @@ namespace Shutupify.Unit
 {
     
     [TestFixture]
-    public class FileSettingsReaderTest
+    public class SettingsReaderTest
     {
-        public FileSettingsReader Subject;
-        public FileSettingsReader SubjectChoppedUp;
+        public SettingsReader Subject;
+        public SettingsReader SubjectChoppedUp;
         public string TestData;
 
         [TestFixtureSetUp]
         public void GetSettingsReader() {
             TestData = System.IO.File.ReadAllText(@"data\FileSettingsReaderTestData");
-            Subject = new FileSettingsReader(TestData);
+            Subject = new SettingsReader(TestData);
 
-            SubjectChoppedUp = new FileSettingsReader(System.IO.File.ReadAllText(@"data\FileSettingsReaderEdgyTestData"));
+            SubjectChoppedUp = new SettingsReader(System.IO.File.ReadAllText(@"data\FileSettingsReaderEdgyTestData"));
         }
 
         [Test]
@@ -85,7 +85,7 @@ namespace Shutupify.Unit
 
         [Test]
         public void list_all_keys() {
-            var keys = new FileSettingsReader("key1 = 123\r\nkey2 = 124\r\n# key3 = 12838");
+            var keys = new SettingsReader("key1 = 123\r\nkey2 = 124\r\n# key3 = 12838");
 
             keys.Keys.Should().ContainInOrder(new[] {"key1","key2", "key3" });
         }
@@ -93,7 +93,7 @@ namespace Shutupify.Unit
         [Test]
         public void list_all_keys_without_duplicates()
         {
-            var keys = new FileSettingsReader("key1 = 123\r\nkey1 = 124\r\n# key3 = 12838");
+            var keys = new SettingsReader("key1 = 123\r\nkey1 = 124\r\n# key3 = 12838");
 
             keys.Keys.Should().HaveCount(2);
             keys.Keys.Should().ContainInOrder(new[] { "key1", "key3" });
@@ -102,7 +102,7 @@ namespace Shutupify.Unit
         [Test]
         public void commented_keys_wont_return_a_value()
         {
-            var keys = new FileSettingsReader("key1 = 123\r\nkey2 = 124\r\n# key3 = 12838");
+            var keys = new SettingsReader("key1 = 123\r\nkey2 = 124\r\n# key3 = 12838");
 
             keys["key3"].Should().BeNullOrEmpty();
             keys["key2"].Should().BeEquivalentTo("124");
@@ -111,7 +111,7 @@ namespace Shutupify.Unit
         [Test]
         public void ensure_key_adds_commented_out_key()
         {
-            var keys = new FileSettingsReader("key1 = 123");
+            var keys = new SettingsReader("key1 = 123");
             keys.Keys.Should().Contain("key1");
 
             keys.EnsureKey("key2", "455");
@@ -125,7 +125,7 @@ namespace Shutupify.Unit
 
         [Test]
         public void ignore_empty_or_invalid_keys() {
-            var keys = new FileSettingsReader("key1 = 123");
+            var keys = new SettingsReader("key1 = 123");
 
             keys.EnsureKey(null, "");
             keys.EnsureKey("", "");
@@ -138,7 +138,7 @@ namespace Shutupify.Unit
 
         [Test]
         public void ensure_adds_key_only_once() {
-            var keys = new FileSettingsReader("key1 = 123");
+            var keys = new SettingsReader("key1 = 123");
             keys.EnsureKey("foo", "1");
             keys.EnsureKey("foo", "2");
             keys.EnsureKey("foo", "3");
@@ -150,7 +150,7 @@ namespace Shutupify.Unit
         [Test]
         public void read_key_ensures_key()
         {
-            var keys = new FileSettingsReader("key1 = 123");
+            var keys = new SettingsReader("key1 = 123");
 
             var newkey = keys["key2"];
 

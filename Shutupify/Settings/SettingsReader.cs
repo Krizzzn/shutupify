@@ -6,17 +6,14 @@ using System.Text.RegularExpressions;
 
 namespace Shutupify.Settings
 {
-    public class FileSettingsReader : ISettingsReader
+    public class SettingsReader : ISettingsReader
     {
         private List<string> _settings;
         private List<string> _keys;
 
-        public FileSettingsReader(string settings)
+        public SettingsReader(string settings)
         {
-            _settings = new List<string>();
-
-            foreach (var line in settings.Split(new[] { '\n' }))
-                _settings.Add(line.Trim());
+            this.Settings = settings;
         }
 
         private string ReadSingleLine(string line)
@@ -78,6 +75,21 @@ namespace Shutupify.Settings
                 .Where(key => !string.IsNullOrEmpty(key))
                 .Distinct()
                 .ToList();
+        }
+
+
+        public string Settings
+        {
+            set
+            {
+                _settings = new List<string>();
+
+                foreach (var line in value.Split(new[] { '\n' }))
+                    _settings.Add(line.Trim());
+            }
+            get {
+                return SerializeToString();
+            }
         }
     }
 }

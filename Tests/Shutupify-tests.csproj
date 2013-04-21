@@ -49,11 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Integration\AutohookerTests.cs" />
     <Compile Include="Testdata\MockPlugin.cs" />
     <Compile Include="Unit\AutoHookerTest.cs" />
     <Compile Include="Unit\EventDispatcherTest.cs" />
-    <Compile Include="Unit\FileSettingsReaderTest.cs" />
+    <Compile Include="Unit\FileReaderTest.cs" />
+    <Compile Include="Unit\SettingsReaderTest.cs" />
+    <Compile Include="Unit\HotkeysProbeTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shutupify\Shutupify.csproj">
@@ -65,7 +66,10 @@
     <None Include="Testdata\FileSettingsReaderEdgyTestData" />
     <None Include="Testdata\FileSettingsReaderTestData" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Integration\" />
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
