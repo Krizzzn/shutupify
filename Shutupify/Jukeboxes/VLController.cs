@@ -1,4 +1,5 @@
 ﻿using Shutupify.Jukeboxes.Drivers;
+using Shutupify.Settings;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Shutupify.Jukeboxes
 {
-    public class VLController : IJukebox, IDisposable
+    public class VLController : IJukebox, IDisposable, ISettable
     {
         Vlcmote _remote;
         Dictionary<JukeboxCommand, string> _actionMapping;
@@ -39,13 +40,8 @@ namespace Shutupify.Jukeboxes
 
         public bool IsActive
         {
-            get
-            {
-                return true;
-            }
-            set{
-            
-            }
+            get;
+            set;
         }
 
         public bool IsAvailable
@@ -70,6 +66,16 @@ namespace Shutupify.Jukeboxes
         public string Name
         {
             get { return "VLC"; }
+        }
+
+        public void ReadSettings(ISettingsReader settings)
+        {
+            settings.EnsureKey(this.Name + ":Port", "9972");
+
+            int port = 0;
+            if (!int.TryParse(settings[this.Name + ":Port"], out port))
+                port = 9972;
+            _remote.Port = port;
         }
 
         #region IDisposable

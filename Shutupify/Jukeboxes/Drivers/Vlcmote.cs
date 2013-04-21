@@ -18,7 +18,7 @@ namespace Shutupify.Jukeboxes.Drivers {
         bool _clientCantBeFound;
         private TcpClient _client;
 
-        public int Port { get { return 9972; } }
+        public int Port { get; set; }
 
         public void Play()
         {

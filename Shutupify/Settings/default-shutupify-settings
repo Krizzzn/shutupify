@@ -21,6 +21,7 @@ iTunes:Activated = yes
 
 # VLC Controller
 VLC:Activated = yes
+VLC:Port = 9972
 
 # WebSocket Controller (needs Chrome extension)
 WebSocket:Activated = yes
