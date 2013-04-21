@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using ManagedWinapi;
 using Shutupify.Settings;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace Shutupify.Probes
 {
@@ -31,44 +33,71 @@ namespace Shutupify.Probes
 
         public bool StartObserving()
         {
+            if (_hotkeys == null)
+                RegisterDefaultHotKeys();
+
             if (Alive())
                 return false;
-
-           new[] { 
-                new { Key = System.Windows.Forms.Keys.Up, Action = JukeboxCommand.Play} ,
-                new { Key = System.Windows.Forms.Keys.Down, Action = JukeboxCommand.Pause} ,
-                new { Key = System.Windows.Forms.Keys.Left, Action = JukeboxCommand.PreviousTrack} ,
-                new { Key = System.Windows.Forms.Keys.Right, Action = JukeboxCommand.NextTrack} 
-            }.ToList()
-            .ForEach((hot) => {
-                RegisterHotKey(hot.Key, hot.Action);
-            });
 
            _hotkeys.ForEach(hot => { hot.Enabled = true; });
 
             return true;
         }
 
-        private void RegisterHotKey(System.Windows.Forms.Keys keys, JukeboxCommand spotifyCommand)
+        private void RegisterDefaultHotKeys()
         {
-            var hotkey = new ManagedWinapi.Hotkey();
+            RegisterHotKey("CTRL+ALT+SHIFT+Up", JukeboxCommand.Play);
+            RegisterHotKey("CTRL+ALT+SHIFT+Down", JukeboxCommand.Pause);
+            RegisterHotKey("CTRL+ALT+SHIFT+Left", JukeboxCommand.PreviousTrack);
+            RegisterHotKey("CTRL+ALT+SHIFT+Right", JukeboxCommand.NextTrack);
+        }
 
+        public IEnumerable<ManagedWinapi.Hotkey> Hotkeys {
+            get {
+                return _hotkeys.ToArray();
+            }
+        }
+
+        private void RegisterHotKey(string hotkeyCombination, JukeboxCommand spotifyCommand)
+        {
+            var k = ParseKeyString(hotkeyCombination);
+            if (k == Keys.None)
+                return;
+
+            var hotkey = new ManagedWinapi.Hotkey();
             if (hotkey.Enabled)
                 hotkey.Enabled = false;
 
-            hotkey.Alt = true;
-            hotkey.Ctrl = true;
-            hotkey.Shift = true;
-            hotkey.KeyCode = keys;
+            hotkey.Alt = hotkeyCombination.Contains("ALT");
+            hotkey.Ctrl = hotkeyCombination.Contains("CTRL") || hotkeyCombination.Contains("STRG"); 
+            hotkey.Shift = hotkeyCombination.Contains("SHIFT");
+
+            if (!hotkey.Alt && !hotkey.Ctrl && !hotkey.Shift) {
+                hotkey.Dispose();
+                return;
+            }
+
+            hotkey.KeyCode = k;
 
             hotkey.HotkeyPressed += (s, e) => {
                 if (ReactOnEvent != null)
                     ReactOnEvent(spotifyCommand);
             };
-
             this._hotkeys.Add(hotkey);
         }
 
+        private Keys ParseKeyString(string hotkeyCombination)
+        {
+            var invalid = new[] { Keys.Alt, Keys.Control, Keys.ControlKey, Keys.Shift, Keys.ShiftKey, Keys.LShiftKey, Keys.RShiftKey, Keys.LControlKey, Keys.RControlKey };
+            hotkeyCombination = hotkeyCombination.ToUpper();
+            var value = Regex.Match(hotkeyCombination, @"[A-z0-9]+$").Value;
+            Keys k = Keys.None;
+            if (!Enum.TryParse<Keys>(value, true, out k))
+                return Keys.None;
+            if (invalid.Contains(k))
+                return Keys.None;
+            return k;
+        }
 
         public string Name
         {
@@ -98,9 +127,13 @@ namespace Shutupify.Probes
             settings.EnsureKey(this.Name + ":" + JukeboxCommand.PreviousTrack.ToString(), "CTRL+ALT+SHIFT+Left");
             settings.EnsureKey(this.Name + ":" + JukeboxCommand.NextTrack.ToString(), "CTRL+ALT+SHIFT+Right");
 
-            /*foreach (string command in Enum.GetNames(typeof(JukeboxCommand))) { 
-                var hotkey = ParseItem()
-            }*/
+            foreach (string commandName in Enum.GetNames(typeof(JukeboxCommand))) {
+                var keys = settings[this.Name + ":" + commandName];
+                if (string.IsNullOrEmpty(keys))
+                    continue;
+                var command = (JukeboxCommand)Enum.Parse(typeof(JukeboxCommand), commandName);
+                RegisterHotKey(keys, command);
+            }
         }
     }
 }
