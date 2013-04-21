@@ -3,7 +3,7 @@ namespace :chrome do
 	require 'coffee-script'
 
 	CHROME = '"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"'
-	NO_CONSOLE_LOG = false
+	@no_console_log = false
 
 	desc "builds the chrome extension"
 	task :build => :ensure_dirs do |task|
@@ -29,13 +29,14 @@ namespace :chrome do
 
 	desc "pack chrome extension as crx file"
 	task :pack  do |task|
-		identify task
+		@no_console_log = true
+		Rake::Task["chrome:build"].invoke
+		
+identify task
 
 		source_dir = FOLDERS[:root] + "ChromeExtension/"
 		fail "Could not find the key file at #{source_dir+"chrome.pem"}. CRX file could not be created." unless File::exists? source_dir+"chrome.pem"
 
-		NO_CONSOLE_LOG = true
-		Rake::Task["chrome:build"].invoke
 		puts "\ncopying files to #{FOLDERS[:chrome]}"
 		extension_files = FileList[source_dir+"chrome.pem"]
 		extension_files.existing!
@@ -59,7 +60,7 @@ namespace :chrome do
 			File.read(file)
 			}.join("\n\n")
 
-		coffee_script.gsub! /.*console.log.*?\n/, "" if NO_CONSOLE_LOG
+		coffee_script.gsub! /.*console.log.*?\n/, "" if @no_console_log 
 
 		java_script = CoffeeScript.compile coffee_script
 	

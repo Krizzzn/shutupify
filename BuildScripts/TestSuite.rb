@@ -49,7 +49,7 @@ namespace :tests do
 	end
 	
 	desc "builds the shutupify-unit test dll"
-	csc :build_test => ["win:build_lib", :test_references, :test_data] do |csc|
+	csc :build => ["win:build_lib", :test_references, :test_data] do |csc|
 		identify "build_test"
 	
 		output = FOLDERS[:test] + "shutupify-unit-tests.dll"
@@ -71,7 +71,7 @@ namespace :tests do
 	end
 	
 	desc "run unit tests"
-	nunit :run_test => [:build_test] do |nunit|
+	nunit :run => [:build] do |nunit|
 		identify "run_test"
 	
 		nunit.command = "C:\\Program Files (x86)\\NUnit 2.5.10\\bin\\net-2.0\\nunit-console.exe" 

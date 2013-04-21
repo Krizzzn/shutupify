@@ -27,7 +27,7 @@ task :ensure_dirs do |t|
 end
 
 desc "build the app, do the unit tests, build chrome extension"
-task :build => ["win:as_release", :clean, "tests:run_test", "win:build_app", "win:clean_up", "chrome:pack"]
+task :build => ["win:as_release", :clean, "tests:run", "win:build_app", "win:clean_up", "chrome:pack"]
 
 private
 
