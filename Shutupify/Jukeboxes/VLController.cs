@@ -54,7 +54,10 @@ namespace Shutupify.Jukeboxes
                 var avail = Process.GetProcesses()
                     .Any(proc => proc.ProcessName.Equals("vlc", StringComparison.InvariantCultureIgnoreCase));
                 if (!avail && _remote != null)
+                {
                     _remote.Dispose();
+                    _remote = null;
+                }
                 return avail;
             }
         }

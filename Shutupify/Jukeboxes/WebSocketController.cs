@@ -12,13 +12,8 @@ namespace Shutupify.Jukeboxes
         WebSocket _socket;
         Dictionary<JukeboxCommand, string> _messageMapping;
 
-        public WebSocketController() : this(new WebSocket())
-        {}
-
-        public WebSocketController(WebSocket socket)
+        public WebSocketController() 
         {
-            _socket = socket;
-
             _messageMapping = new Dictionary<JukeboxCommand, string>();
             _messageMapping.Add(JukeboxCommand.Play, "PLAY!");
             _messageMapping.Add(JukeboxCommand.Pause, "PAUSE!");
@@ -28,23 +23,38 @@ namespace Shutupify.Jukeboxes
             _messageMapping.Add(JukeboxCommand.PlayAfterPaused, "PLAY!");
         }
 
+        public WebSocketController(WebSocket socket) : this()
+        {
+            _socket = socket;
+        }
+
         public bool IsAvailable
         {
             get {
-                return _socket.ClientConnected;
+                return IsActive && _socket.ClientConnected;
             }
         }
 
         public bool IsPlaying
         {
-            get { return _socket.IsPlaying(); }
+            get { return IsActive && _socket.IsPlaying(); }
         }
 
 
         public bool IsActive
         {
-            get;
-            set;
+            get {
+                return _socket != null;
+            }
+            set {
+                if (value && _socket == null)
+                    _socket = new WebSocket();
+                if (!value && _socket != null)
+                {
+                    _socket.Dispose();
+                    _socket = null;
+                }
+            }
         }
 
         public void PerformAction(JukeboxCommand cmd)
