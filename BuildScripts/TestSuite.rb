@@ -62,6 +62,8 @@ namespace :tests do
 		fail "Unit test references are not available in binary directory" unless references.has? "nunit.framework.dll",	"FluentAssertions.dll",	"Moq.dll"
 	
 		for_compile = FileList["Tests/Unit/*.cs"] 
+		for_compile.exclude(/.hotkeysprobe.*.cs/i) 	unless references.has? "ManagedWinapi.dll"
+
 		puts "compiling #{for_compile.length} files."
 	
 		csc.use 		:net40

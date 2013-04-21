@@ -8,6 +8,7 @@ Hotkeys:Play = CTRL+ALT+SHIFT+Up
 Hotkeys:Pause = CTRL+ALT+SHIFT+Down
 Hotkeys:PreviousTrack = CTRL+ALT+SHIFT+Left
 Hotkeys:NextTrack = CTRL+ALT+SHIFT+Right
+#Hotkeys:Toggle = 
 
 # Away-from-keyboard Probe
 AFK:activated = yes
