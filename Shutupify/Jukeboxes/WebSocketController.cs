@@ -1,4 +1,5 @@
 ﻿using Shutupify.Jukeboxes.Drivers;
+using Shutupify.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Shutupify.Jukeboxes
 {
-    public class WebSocketController : IJukebox, IDisposable
+    public class WebSocketController : IJukebox, IDisposable, ISettable
     {
         WebSocket _socket;
         Dictionary<JukeboxCommand, string> _messageMapping;
@@ -48,7 +49,14 @@ namespace Shutupify.Jukeboxes
             }
             set {
                 if (value && _socket == null)
-                    _socket = new WebSocket();
+                {
+                    _socket = new WebSocket()
+                    {
+                        Port = _port,
+                        ChromeExtensionOrigin = _chromeExtension
+                    };
+                }
+
                 if (!value && _socket != null)
                 {
                     _socket.Dispose();
@@ -70,8 +78,23 @@ namespace Shutupify.Jukeboxes
             get { return "WebSocket"; }
         }
 
+        public void ReadSettings(ISettingsReader settings)
+        {
+            settings.EnsureKey(this.Name + ":Port", "9971");
+            settings.EnsureKey(this.Name + ":ChromeExtension", "mnkmaflojambglihddgpalgbfmogokfd");
+
+            int port = 0;
+            if (!int.TryParse(settings[this.Name + ":Port"], out port))
+                port = 9971;
+            _port = port;
+
+            _chromeExtension = settings[this.Name + ":ChromeExtension"];
+        }
+
         #region IDisposable
         private bool disposed = false;
+        private string _chromeExtension;
+        private int _port;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -97,6 +120,5 @@ namespace Shutupify.Jukeboxes
             Dispose(false);
         }
         #endregion
-
     }
 }

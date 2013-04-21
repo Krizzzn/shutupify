@@ -24,6 +24,8 @@ VLC:activated = yes
 
 # WebSocket Controller (needs Chrome extension)
 WebSocket:activated = yes
+WebSocket:Port = 9971
+#WebSocket:ChromeExtension = mnkmaflojambglihddgpalgbfmogokfd
 
 # Spotify Controller
 Spotify:activated = yes

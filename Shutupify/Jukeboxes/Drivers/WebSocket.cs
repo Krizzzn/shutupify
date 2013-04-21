@@ -13,21 +13,34 @@ namespace Shutupify.Jukeboxes.Drivers
     {
         WebSocketServer _server;
         List<UserContext> _clients;
-        
-        public const string CHROME_EXTENTION_ORIGIN = "chrome-extension://mnkmaflojambglihddgpalgbfmogokfd";
 
-        public int Port { get { return 9971; } }
+        public string ChromeExtensionOrigin
+        { 
+            get; 
+            set; 
+        }
+
+        public int Port
+        {
+            get;
+            set;
+        }
 
         public WebSocket()
         {
             _clients = new List<UserContext>();
+
+            var chromeExt = "";
+            if (!string.IsNullOrEmpty(ChromeExtensionOrigin))
+                chromeExt = "chrome-extension://" + ChromeExtensionOrigin;
+
             _server = new WebSocketServer(this.Port, IPAddress.Loopback)
             {
                 OnReceive = OnReceive,
                 OnConnected = OnConnect,
                 OnDisconnect = OnDisconnect,
                 TimeOut = new TimeSpan(0, 5, 0),
-                Origin = CHROME_EXTENTION_ORIGIN
+                Origin = chromeExt
             };
 
             _server.Start();
