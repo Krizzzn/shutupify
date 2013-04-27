@@ -3,6 +3,15 @@ shutupify =
   pingpong_timer: null,
   player: null,
   socket: null,
+  set_icon: (icon_name) ->
+    if this.socket? and this.socket.readyState == 1
+      icon_name += "-connected"
+    chrome.browserAction.setIcon "path": "38": "icon-#{icon_name}.png"  
+
+  no_player: ->
+    this.player = null
+    this.set_icon "stop"
+
   open_socket: ->
     unless (shutupify.socket?)
       this.connect()
@@ -31,9 +40,27 @@ shutupify =
 
       this.socket
 
-chrome.browserAction.onClicked.addListener (tab) ->
-  shutupify.player.control "PLAYING?"
-  #shutupify.open_socket()
+
+class Player
+  constructor: (@tab, @player_id) ->
+    this.url = @tab.url
+    console.log "new player!", this
+
+  playing: false
+
+  url: null
+
+  control: (msg, callback) ->
+    console.log "sending"
+    chrome.tabs.sendMessage @tab.id, "#{msg}", callback
+    this
+
+
+######### BROWSER EVENTS###########
+
+chrome.browserAction.onClicked.addListener (tab) -> 
+  shutupify.player.control "TOGGLE!" if shutupify.player?
+  shutupify
 
 chrome.runtime.onMessage.addListener (player_sent, sender) ->
   console.log "tab sent", player_sent, shutupify
@@ -42,30 +69,33 @@ chrome.runtime.onMessage.addListener (player_sent, sender) ->
     shutupify.player = new Player sender.tab, player_sent.player_id
   shutupify.player.playing = (player_sent.playback == "started")
   shutupify.open_socket()
+  icon = "stop"
 
   state = if (player_sent.playback) 
+    icon = "pause"
     "PLAYING" 
   else 
+    icon = "play"
     "PAUSED"
  
   console.log "sending #{state} to socket."
   shutupify.socket.send state if shutupify.socket? and shutupify.socket.readyState == 1
+
+  shutupify.set_icon icon
   shutupify
 
+chrome.tabs.onRemoved.addListener (tabid) ->
+  if shutupify? and shutupify.player? and tabid == shutupify.player.tab.id
+    shutupify.no_player()
 
-class Player
-  constructor: (@tab, @player_id) ->
-    player_id = @player_id
-    console.log "new player!"
+chrome.tabs.onUpdated.addListener (tabid, changeInfo) ->
+  if shutupify? and changeInfo.url? and shutupify.player? and tabid == shutupify.player.tab.id
+    console.log changeInfo.url, "!=", shutupify.player.url
 
-  playing: false
+    if changeInfo.url.replace(/\#.*/,"") != shutupify.player.url.replace(/\#.*/,"")
+      shutupify.no_player() 
 
-  player_id: null
 
-  control: (msg, callback) ->
-    console.log "sending"
-    chrome.tabs.sendMessage @tab.id, "#{msg}", callback
-    this
 
 
 

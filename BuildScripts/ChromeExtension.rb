@@ -17,7 +17,7 @@ namespace :chrome do
 		build_coffeescript FOLDERS[:chrome]+"shutupify-content.js", content
 
 		puts "\ncopying files to #{FOLDERS[:chrome]}"
-		extension_files = FileList[source_dir+"manifest.json", source_dir+"icon.png"]
+		extension_files = FileList[source_dir+"manifest.json", source_dir+"Icon/*.png"]
 		extension_files.existing!
 		cp extension_files, FOLDERS[:chrome] 
 
