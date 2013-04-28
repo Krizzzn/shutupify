@@ -9,6 +9,7 @@ class Player
     window.setTimeout () ->
       self.shutupify.send "play", self if self.is_playing()
     , 250
+    self.shutupify.add_player this
     console.log @id
 
   is_playing: () ->

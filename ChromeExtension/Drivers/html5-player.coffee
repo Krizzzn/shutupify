@@ -23,6 +23,7 @@ class Html5Player extends Player
     html_elements = document.querySelectorAll("audio, video");
 
     for element in html_elements
-      do (element) ->
-        new Html5Player shutupify, element
+      new Html5Player shutupify, element
+
+    shutupify
   
