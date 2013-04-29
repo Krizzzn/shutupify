@@ -3,7 +3,14 @@ shutupify =
   pingpong_timer: null,
   player: null,
   socket: null,
+  last_icon: null,
+  
   set_icon: (icon_name) ->
+    if icon_name?
+      this.last_icon = icon_name
+    else
+      icon_name = this.last_icon
+
     if this.socket? and this.socket.readyState == 1
       icon_name += "-connected"
     chrome.browserAction.setIcon "path": "38": "icon-#{icon_name}.png"  
@@ -15,6 +22,7 @@ shutupify =
   open_socket: ->
     unless (shutupify.socket?)
       this.connect()
+
   connect: ->
     this.socket = new WebSocket("ws://localhost:9971/shutupify") 
 
@@ -22,12 +30,14 @@ shutupify =
       shutupify.pingpong_timer = window.setInterval ->
         shutupify.socket.send "PING" if shutupify.socket? and shutupify.socket.readyState == 1
       , 1000*60*4
+      shutupify.set_icon()
       console.log "shutupify connected"
 
     this.socket.onclose = ->
       console.log "shutupify connection lost."
       window.clearInterval shutupify.pingpong_timer
       shutupify.socket = null
+      shutupify.set_icon()
       null
 
     this.socket.onmessage = (evt) ->
