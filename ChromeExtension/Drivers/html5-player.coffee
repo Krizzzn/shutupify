@@ -7,9 +7,9 @@ class Html5Player extends Player
   register_events: () ->
   	self = this
   	@htmlelement.addEventListener "play", ->
-  	  self.shutupify.send "play", self
+  	  self.shutupify.send self
     @htmlelement.addEventListener "pause", ->
-  	  self.shutupify.send "pause", self
+  	  self.shutupify.send self
 
   play: ->
   	@htmlelement.play()

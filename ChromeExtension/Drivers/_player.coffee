@@ -7,7 +7,7 @@ class Player
     self = this;
     @id = @htmlelement.id || "player_" + Math.floor(Math.random()*100000)
     window.setTimeout () ->
-      self.shutupify.send "play", self if self.is_playing()
+      self.shutupify.send self if self.is_playing()
     , 250
     self.shutupify.add_player this
     console.log @id

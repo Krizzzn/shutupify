@@ -9,9 +9,7 @@ class YoutubePlayer extends Player
     self = this
     last_known_state = null
     youtube_watch = window.setInterval () ->
-      if self.is_playing() != last_known_state
-        self.shutupify.send "play", self if self.is_playing()
-        self.shutupify.send "pause", self unless self.is_playing()
+      self.shutupify.send self if self.is_playing() isnt last_known_state
       last_known_state = self.is_playing()
     , 5000
     this

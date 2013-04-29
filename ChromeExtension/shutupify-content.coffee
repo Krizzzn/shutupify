@@ -20,11 +20,14 @@ shutupify =
         when "TOGGLE!" then self.current_player.toggle()
         when "PLAYING?" then self.send "PLAYING", self.current_player
 
-  send: (msg, player) ->
+  send: (player) ->
     @current_player = player
-    playing = (player.is_playing()) ? "started" : "paused"
-    chrome.runtime.sendMessage {"playback": playing, "player_id": player.id }
-    console.log msg, player
+    playing = if player.is_playing()
+      "started"
+    else
+      "paused"
+    chrome.runtime.sendMessage {"playback": (playing=="started"), "player_id": player.id }
+    console.log "playing=#{playing}", player
 
   initialize_all_players: ->
     Html5Player.find_players(this)
