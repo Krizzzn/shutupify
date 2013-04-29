@@ -13,7 +13,7 @@ shutupify =
 
     if this.socket? and this.socket.readyState == 1
       icon_name += "-connected"
-    chrome.browserAction.setIcon "path": "38": "icon-#{icon_name}.png"  
+    chrome.browserAction.setIcon "path": "38": "assets/icon-#{icon_name}.png"  
 
   no_player: ->
     this.player = null

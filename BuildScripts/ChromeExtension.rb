@@ -17,9 +17,11 @@ namespace :chrome do
 		build_coffeescript FOLDERS[:chrome]+"shutupify-content.js", content
 
 		puts "\ncopying files to #{FOLDERS[:chrome]}"
-		extension_files = FileList[source_dir+"manifest.json", source_dir+"Icon/*.png"]
-		extension_files.existing!
+		extension_files = FileList[source_dir+"manifest.json"]
 		cp extension_files, FOLDERS[:chrome] 
+		
+		icon_files = FileList[source_dir+"Icon/*.png"]
+		cp icon_files, FOLDERS[:chrome_assets] 
 
 		version = File.read(FOLDERS[:root] + "VERSION")
 		puts "\ntagging manifest.json with version #{version}"

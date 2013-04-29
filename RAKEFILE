@@ -6,12 +6,13 @@ require 'buildscripts/ChromeExtension'
 require 'buildscripts/WindowsApplication'
 require 'buildscripts/TestSuite'
 
-FOLDERS = { :root   =>  File.dirname(__FILE__) + "/"}
-FOLDERS[:build] =       FOLDERS[:root] + "build/"
-FOLDERS[:binaries] =    FOLDERS[:root] + "lib/"
-FOLDERS[:test] =        FOLDERS[:build]+ "test/"
-FOLDERS[:test_data] =   FOLDERS[:test] + "data/"
-FOLDERS[:chrome] =      FOLDERS[:build]+ "chrome/"
+FOLDERS = { :root   =>      File.dirname(__FILE__) + "/"}
+FOLDERS[:build] =           FOLDERS[:root] + "build/"
+FOLDERS[:binaries] =        FOLDERS[:root] + "lib/"
+FOLDERS[:test] =            FOLDERS[:build]+ "test/"
+FOLDERS[:test_data] =       FOLDERS[:test] + "data/"
+FOLDERS[:chrome] =          FOLDERS[:build]+ "chrome/"
+FOLDERS[:chrome_assets] =   FOLDERS[:chrome]+ "assets/"
 
 
 CLEAN.include(FOLDERS[:build] + "**")
