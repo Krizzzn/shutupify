@@ -2,7 +2,7 @@
 class SoundcloudPlayer extends Player
 
   is_playing: () ->
-    @htmlelement.className.indexOf("sc-button-pause") >= 0
+    @htmlelement.className.indexOf("sc-button-pause") >= 0 or @htmlelement.className.indexOf("playButton__playing") >= 0
 
   register_events: () ->
     self = this
@@ -26,14 +26,16 @@ class SoundcloudPlayer extends Player
     this
 
   @find_soundcloud_players = (shutupify) ->
-    elements = document.getElementsByClassName("sc-button-play")
+    elements = document.querySelectorAll(".sc-button-play, .playButton")
     for element in elements
       if element.className.indexOf("shutupify") < 0
         element.className += " shutupify"
         new SoundcloudPlayer shutupify, element
 
   @find_players = (shutupify) ->
-    return unless location.host.toLowerCase() is "soundcloud.com"
+    return unless location.host.toLowerCase() is "soundcloud.com" or document.getElementById("widget")?
+    
+    console.log "looking for SoundcloudPlayer"
 
     window.setTimeout ->
       SoundcloudPlayer.find_soundcloud_players shutupify

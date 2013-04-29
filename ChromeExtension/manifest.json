@@ -18,7 +18,7 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["http://www.youtube.com/embed/*"],
+      "matches": ["http://www.youtube.com/embed/*", "http://w.soundcloud.com/*", "https://w.soundcloud.com/*"],
       "js": ["shutupify-content.js"],
       "all_frames": true,
       "run_at": "document_idle"
