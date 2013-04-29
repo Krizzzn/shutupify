@@ -32,5 +32,6 @@ shutupify =
   initialize_all_players: ->
     Html5Player.find_players(this)
     YoutubePlayer.find_players(this)
+    SoundcloudPlayer.find_players(this)
 
 shutupify.initialize()
