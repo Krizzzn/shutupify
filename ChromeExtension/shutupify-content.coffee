@@ -18,7 +18,7 @@ shutupify =
         when "PLAY!" then self.current_player.play()
         when "PAUSE!" then self.current_player.pause()
         when "TOGGLE!" then self.current_player.toggle()
-        when "PLAYING?" then self.send "PLAYING", self.current_player
+        when "PLAYING?" then self.send self.current_player
 
   send: (player) ->
     @current_player = player
