@@ -68,6 +68,16 @@ namespace frm
         private void ShutupifyView_FormClosing(object sender, FormClosingEventArgs e)
         {
             sirHookalot.Clear();
+            SystemTrayIcon.Visible = false;
+            SystemTrayIcon.Dispose();
+        }
+
+        private void BringToFront(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Normal;
+            this.Show();
+            this.TopMost = true;
+            this.TopMost = false;
         }
 
     }

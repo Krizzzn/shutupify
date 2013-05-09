@@ -27,7 +27,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShutupifyView));
             this.Whatsup = new System.Windows.Forms.Label();
+            this.SystemTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
             // 
             // Whatsup
@@ -40,6 +43,13 @@
             this.Whatsup.Size = new System.Drawing.Size(99, 20);
             this.Whatsup.TabIndex = 0;
             this.Whatsup.Text = "{whatup}?";
+            // 
+            // SystemTrayIcon
+            // 
+            this.SystemTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("SystemTrayIcon.Icon")));
+            this.SystemTrayIcon.Text = "shutupify, for windows!";
+            this.SystemTrayIcon.Visible = true;
+            this.SystemTrayIcon.Click += new System.EventHandler(this.BringToFront);
             // 
             // ShutupifyView
             // 
@@ -67,6 +77,7 @@
         #endregion
 
         private System.Windows.Forms.Label Whatsup;
+        private System.Windows.Forms.NotifyIcon SystemTrayIcon;
     }
 }
 
