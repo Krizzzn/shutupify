@@ -65,5 +65,10 @@ namespace frm
             Whatsup.Text = lastFoo;
         }
 
+        private void ShutupifyView_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            sirHookalot.Clear();
+        }
+
     }
 }

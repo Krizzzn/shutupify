@@ -125,6 +125,7 @@ namespace Shutupify.Jukeboxes.Drivers
                     {
                         _server.Stop();
                         _server.Dispose();
+                        _server = null;
                     }
                 }
 

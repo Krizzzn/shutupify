@@ -58,6 +58,7 @@
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Shutupify";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ShutupifyView_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
