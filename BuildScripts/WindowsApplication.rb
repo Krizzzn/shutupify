@@ -46,6 +46,9 @@ namespace :win do
 
 		libraryname = FOLDERS[:build] + "shutupify-lib.dll"
 		File::delete libraryname if File::exists? libraryname
+
+		settings_path = FOLDERS[:build] + "shutupify.settings" 
+		cp FOLDERS[:root] + "shutupify/Settings/default-shutupify-settings", settings_path  unless File::exists? settings_path
 		
 		references = FileList["#{FOLDERS[:build]}*.dll"]
 		references.extend(FileListEnhancement)
@@ -68,11 +71,19 @@ namespace :win do
 		csc.use 		:net40
 		csc.compile 	for_compile
 		csc.references 	references
+		csc.resources	FileList["Shutupify/Settings/default-shutupify-settings"]
 		csc.debug = debug
 		csc.target = 	:library
 		csc.output = 	libraryname
 
 	end
+
+	desc "adsad"
+	exec :se do |ex|
+		ex.command = "resgen"
+  		#ex.parameters "--help"
+	end
+
 
 	desc "builds the shutupify-app"
 	csc :build_app => :build_lib do |csc|
@@ -96,8 +107,26 @@ namespace :win do
 		csc.target = 	:winexe
 		csc.main =      "frm.Program"
 		csc.output = 	application_name
+		#csc.win32icon = "foo"
 	end
 
+	ilmerge :merge  do |cfg|
+		for_merge = FileList[
+			FOLDERS[:build] + "shutupify-lib.dll", 
+			FOLDERS[:build] + "Alchemy.dll",
+			FOLDERS[:build] + "Interop.iTunesLib.dll"
+		] 
+		puts for_merge
+
+		for_merge.existing!
+		puts "-"*40
+		puts for_merge
+
+		cfg.command = 'C:\Program Files (x86)\Microsoft\ILMerge\ILMerge.exe'  # optional, if you have it installed within the repository
+		cfg.assemblies FOLDERS[:build] + "shutupify-app.exe", for_merge.to_ary
+		cfg.output = FOLDERS[:build] + 'master.exe'
+	end
+	
 	desc "build the app"
 	task :build => [:build_app, :clean_up]
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Shutupify;
 
 namespace Shutupify.Settings
 {
@@ -92,5 +93,10 @@ namespace Shutupify.Settings
                 return SerializeToString();
             }
         }
-    }
+
+        public static ISettingsReader GetDefaultReader() {
+            var default_settings = System.Reflection.Assembly.GetExecutingAssembly().LoadEmbeddedFile("default-shutupify-settings");
+            return new SettingsReader(default_settings);
+        }
+    }   
 }

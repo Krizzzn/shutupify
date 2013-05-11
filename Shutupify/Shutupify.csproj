@@ -88,8 +88,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Settings\default-shutupify-settings">
-    </None>
+    <EmbeddedResource Include="Settings\default-shutupify-settings" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

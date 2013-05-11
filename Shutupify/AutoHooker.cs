@@ -16,12 +16,19 @@ namespace Shutupify
         public AutoHooker() : this(null, null)
         {}
 
+        public AutoHooker(Settings.ISettingsReader settings)
+            : this(settings, null)
+        { }
+
         public AutoHooker(Settings.ISettingsReader settings, IEventDispatcher dispatcher)
         {
             _probes = new List<IEventProbe>();
             _jukeboxes = new List<IJukebox>();
             LoadFromAssembly(Assembly.GetExecutingAssembly());
             this._settings = settings;
+            if (this._settings == null)
+                this._settings = SettingsReader.GetDefaultReader();
+
             this._dispatcher = dispatcher ?? new EventDispatcher();
             _dispatcher.Jukeboxes = _jukeboxes;
         }
