@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Shutupify;
+using Shutupify.Settings;
 
 namespace frm
 {
@@ -22,10 +23,10 @@ namespace frm
             InitializeComponent();
             InitializeComponentCustom();
 
-            Dragify(this);
-            Whatsup.Text = " ";
-
-            sirHookalot = new AutoHooker();
+            FileReader settingsReader = null;
+            if (System.IO.File.Exists("shutupify.settings"))
+                settingsReader = new FileReader("shutupify.settings");
+            sirHookalot = new AutoHooker(settingsReader);
 
             sirHookalot.ReactOnEvent += (t) => {
                 try {
@@ -37,6 +38,9 @@ namespace frm
                 };
             };
             sirHookalot.Hookup();
+
+            if (settingsReader == null)
+                settingsReader.Save();
         }
 
         private void InitializeComponentCustom()
@@ -47,6 +51,9 @@ namespace frm
 
             SystemTrayIcon.Icon = icon;
             this.Icon = icon;
+
+            Dragify(this);
+            Whatsup.Text = " ";
 
             this.BackColor = Color.FromArgb(64, 62, 65);
             this.ForeColor = Color.FromArgb(184, 200, 43);
