@@ -52,6 +52,7 @@
     <Compile Include="Probes\LyncCallProbe.cs" />
     <Compile Include="Jukeboxes\Drivers\Spotify.cs" />
     <Compile Include="Jukeboxes\SpotifyController.cs" />
+    <Compile Include="ResourceLoader.cs" />
     <Compile Include="Settings\FileReader.cs" />
     <Compile Include="Settings\SettingsReader.cs" />
     <Compile Include="Settings\IName.cs" />
