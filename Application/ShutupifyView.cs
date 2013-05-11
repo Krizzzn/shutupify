@@ -20,12 +20,10 @@ namespace frm
         public ShutupifyView()
         {
             InitializeComponent();
+            InitializeComponentCustom();
 
-            this.BackColor = Color.FromArgb(64, 62, 65);
-            this.ForeColor = Color.FromArgb(184,200,43);
             Dragify(this);
-            Whatsup.Text = "Igor!!! It's alive!";
-
+            Whatsup.Text = " ";
 
             sirHookalot = new AutoHooker();
 
@@ -39,6 +37,19 @@ namespace frm
                 };
             };
             sirHookalot.Hookup();
+        }
+
+        private void InitializeComponentCustom()
+        {
+            var appIconStream = System.Reflection.Assembly.GetExecutingAssembly().LoadEmbeddedAsStream("app-icon.ico");
+            var icon = new System.Drawing.Icon(appIconStream);
+            appIconStream.Dispose();
+
+            SystemTrayIcon.Icon = icon;
+            this.Icon = icon;
+
+            this.BackColor = Color.FromArgb(64, 62, 65);
+            this.ForeColor = Color.FromArgb(184, 200, 43);
         }
 
         private void Dragify(Control c)

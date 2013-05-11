@@ -28,7 +28,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShutupifyView));
+
             this.Whatsup = new System.Windows.Forms.Label();
             this.SystemTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.SuspendLayout();
@@ -46,7 +46,6 @@
             // 
             // SystemTrayIcon
             // 
-            this.SystemTrayIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("SystemTrayIcon.Icon")));
             this.SystemTrayIcon.Text = "shutupify, for windows!";
             this.SystemTrayIcon.Visible = true;
             this.SystemTrayIcon.Click += new System.EventHandler(this.BringToFront);

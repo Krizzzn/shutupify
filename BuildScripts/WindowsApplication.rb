@@ -91,7 +91,8 @@ namespace :win do
 		csc.use 		:net40
 		csc.compile 	for_compile
 		csc.references 	references
-		csc.debug = debug
+		csc.resources	FileList["Application/resources/*"]
+		csc.debug = 	debug
 		csc.target = 	:winexe
 		csc.main =      "frm.Program"
 		csc.output = 	application_name
