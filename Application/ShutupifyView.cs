@@ -39,7 +39,7 @@ namespace frm
             };
             sirHookalot.Hookup();
 
-            if (settingsReader == null)
+            if (settingsReader != null)
                 settingsReader.Save();
         }
 
