@@ -49,13 +49,7 @@ namespace Shutupify.Jukeboxes
             }
             set {
                 if (value && _socket == null)
-                {
-                    _socket = new WebSocket()
-                    {
-                        Port = _port,
-                        ChromeExtensionOrigin = _chromeExtension
-                    };
-                }
+                    _socket = new WebSocket(_port, _chromeExtension);
 
                 if (!value && _socket != null)
                 {

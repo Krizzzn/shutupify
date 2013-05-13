@@ -17,17 +17,20 @@ namespace Shutupify.Jukeboxes.Drivers
         public string ChromeExtensionOrigin
         { 
             get; 
-            set; 
+            private set; 
         }
 
         public int Port
         {
             get;
-            set;
+            private set;
         }
 
-        public WebSocket()
+        public WebSocket(int port, string chromeExtensionOrigin)
         {
+            this.Port = port;
+            this.ChromeExtensionOrigin = chromeExtensionOrigin;
+
             _clients = new List<UserContext>();
 
             var chromeExt = "";
